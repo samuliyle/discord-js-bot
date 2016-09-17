@@ -27,4 +27,5 @@ module.exports = [
   'Yesterday it would have been a yes, but today its a yep',
   'You will have to wait',
   ':thinking:',
+  'You should ask MrDestructoid',
 ];
