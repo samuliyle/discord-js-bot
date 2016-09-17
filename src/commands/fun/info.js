@@ -24,8 +24,14 @@ function userInfo(parameters, message) {
   return Promise.resolve(userinfo);
 }
 
+function botInfo() {
+  return Promise.resolve(`Made by **Wraithy**.\n**Github:** https://github.com/wraithyz/discord-js-bot`);
+}
+
 module.exports = {
   channelinfo: channelInfo,
   userinfo: userInfo,
   guildinfo: guildInfo,
+  info: botInfo,
+  bot: botInfo,
 };
