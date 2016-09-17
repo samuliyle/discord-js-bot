@@ -1,2 +1,3 @@
 # discord-js-bot
-Rewrite of old discord bot
+
+A rewrite/restructuring of [discordBot](https://github.com/wraithyz/discordBot) in JavaScript.

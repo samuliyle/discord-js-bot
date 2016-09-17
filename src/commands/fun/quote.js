@@ -31,11 +31,13 @@ function searchPhrase(parameters, message) {
   const phrase = parameters.join(' ');
   const finalPhrase = `%${phrase}%`;
   return new Promise((resolve, reject) => {
-    connection.query('SELECT username, message, time FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, '95592065215246336'], (err, result) => {
+    connection.query('SELECT username, message, time FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, message.channel.id], (err, result) => {
       if (err) return reject(err);
       if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
       const rand = Math.floor(Math.random() * result.length);
-      resolve(result[rand].message);
+      const quote = result[rand];
+      const date = new Date(quote.time);
+      resolve(`${quote.username}: "${quote.message}" (${formatTime(date, false)})\n`);
     });
   });
 }
@@ -46,7 +48,7 @@ function phraseCount(parameters, message) {
   const phrase = parameters.join(' ');
   const finalPhrase = `%${phrase}%`;
   return new Promise((resolve, reject) => {
-    connection.query('SELECT count(*) FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, '95592065215246336'], (err, result) => {
+    connection.query('SELECT count(*) FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, message.channel.id], (err, result) => {
       if (err) return reject(err);
       return (resolve(`${result[0]['count(*)']}`));
     });

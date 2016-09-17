@@ -1,6 +1,6 @@
 const Promise = require('bluebird');
 
-const answers = require('../../data/eightBall');
+const answers = require('../../data/eightball');
 
 function eightBall(question) {
   if (question.length === 0) return Promise.resolve('Might wanna ask a question...');

@@ -98,7 +98,7 @@ client.on('message', (message) => {
     if (message.author.id === constants.ID) return;
     if (msg.charAt(0) === '!') {
       const parameters = msg.split(' ');
-      const command = parameters[0].substring(1);
+      const command = parameters[0].substring(1).toLowerCase();
       const cmd = commands[command];
       if (cmd) {
         handleCommand(cmd, parameters.slice(1), message);
