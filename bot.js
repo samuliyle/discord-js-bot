@@ -95,7 +95,7 @@ client.on('ready', () => {
 client.on('message', (message) => {
   const msg = message.content;
   if (msg) {
-    if (message.author.id === constants.ID) return;
+    if (message.author.id === constants.ID || message.author.bot) return;
     if (msg.charAt(0) === '!') {
       const parameters = msg.split(' ');
       const command = parameters[0].substring(1).toLowerCase();
