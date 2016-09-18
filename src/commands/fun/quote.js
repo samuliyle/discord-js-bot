@@ -55,9 +55,28 @@ function phraseCount(parameters, message) {
   });
 }
 
+function findLastOccurance(parameters, message) {
+  if (parameters.length === 0) return;
+  const phrase = parameters.join(' ');
+  const finalPhrase = `%${phrase}%`;
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time DESC LIMIT 1', [message.channel.id, finalPhrase], (err, result) => {
+      if (err) return reject(err);
+      if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
+      const rand = Math.floor(Math.random() * result.length);
+      const quote = result[rand];
+      const date = new Date(quote.time);
+      resolve(`${quote.username}: "${quote.message}" (${formatTime(date, false)})\n`);
+    });
+  });
+}
+
 module.exports = {
   quote: randomQuote,
   randomquote: randomQuote,
   phrase: searchPhrase,
   phrasecount: phraseCount,
+  lastphrase: findLastOccurance,
+  lastoccurance: findLastOccurance,
+  last: findLastOccurance,
 };
