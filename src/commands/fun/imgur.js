@@ -7,7 +7,7 @@ function randomSubredditImage(subReddit) {
   if (subReddit.length === 0) return;
   const options = {
     host: 'api.imgur.com',
-    path: `/3/gallery/r/${subReddit}/top/month/1`,
+    path: `/3/gallery/r/${subReddit}`,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Client-ID ${constants.IMGURID}`,
