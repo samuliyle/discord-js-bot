@@ -55,6 +55,21 @@ function phraseCount(parameters, message) {
   });
 }
 
+// TODO: Fix copy pasterino code
+function findFirstOccurance(parameters, message) {
+  if (parameters.length === 0) return;
+  const phrase = parameters.join(' ');
+  const finalPhrase = `%${phrase}%`;
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time ASC LIMIT 1', [message.channel.id, finalPhrase], (err, result) => {
+      if (err) return reject(err);
+      if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
+      const date = new Date(result[0].time);
+      resolve(`${result[0].username}: "${result[0].message}" (${formatTime(date, false)})\n`);
+    });
+  });
+}
+
 function findLastOccurance(parameters, message) {
   if (parameters.length === 0) return;
   const phrase = parameters.join(' ');
@@ -63,10 +78,9 @@ function findLastOccurance(parameters, message) {
     connection.query('SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time DESC LIMIT 1', [message.channel.id, finalPhrase], (err, result) => {
       if (err) return reject(err);
       if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
-      const rand = Math.floor(Math.random() * result.length);
-      const quote = result[rand];
-      const date = new Date(quote.time);
-      resolve(`${quote.username}: "${quote.message}" (${formatTime(date, false)})\n`);
+      console.log(result);
+      const date = new Date(result[0].time);
+      resolve(`${result[0].username}: "${result[0].message}" (${formatTime(date, false)})\n`);
     });
   });
 }
@@ -76,7 +90,10 @@ module.exports = {
   randomquote: randomQuote,
   phrase: searchPhrase,
   phrasecount: phraseCount,
+  last: findLastOccurance,
   lastphrase: findLastOccurance,
   lastoccurance: findLastOccurance,
-  last: findLastOccurance,
+  first: findFirstOccurance,
+  firstphrase: findFirstOccurance,
+  firstoccurance: findFirstOccurance,
 };
