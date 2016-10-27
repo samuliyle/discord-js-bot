@@ -4,7 +4,7 @@ const https = require('https');
 const constants = require('../../../config/constants');
 
 function randomSubredditImage(subReddit) {
-  if (subReddit.length === 0) return;
+  if (subReddit.length === 0) return Promise.resolve('Include a subreddit.');
   const options = {
     host: 'api.imgur.com',
     path: `/3/gallery/r/${subReddit}`,

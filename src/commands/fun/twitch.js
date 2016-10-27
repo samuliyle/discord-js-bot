@@ -17,7 +17,7 @@ function modifyAlerts(result) {
       }
       alerts[result[i].twitchChannel].alert.push({ userId: result[i].userId, channelId: result[i].channelId })
     } else {
-      alerts[result[i].twitchChannel] = { alert: [{ userId: result[i].userId, channelId: result[i].channelId }], online: false };
+      alerts[result[i].twitchChannel] = { alert: [{ userId: result[i].userId, channelId: result[i].channelId }], online: true };
     }
   }
 }
