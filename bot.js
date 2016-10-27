@@ -17,7 +17,7 @@ client.login(constants.LOGIN_TOKEN);
 const log = new Logger(loggerConfig);
 
 function handleCommand(cmd, parameters, message) {
-  const cmdReturn = cmd(parameters, message);
+  let cmdReturn = cmd(parameters, message);
   const startTime = new Date().getTime();
   if (cmdReturn instanceof Promise) {
     cmdReturn.then((res) => {
@@ -36,6 +36,28 @@ function logMessage(msg) {
   [msg.content, msg.author.id, msg.channel.id, msg.author.username, new Date()], (err) => {
     if (err) throw err;
   });
+}
+
+function evalCommand(parameters, message) {
+  if (message.author.id !== constants.MASTER || parameters.length === 0) return Promise.resolve();
+  try {
+      const code = parameters.join(" ");
+      let evaled = eval(code);
+      if (typeof evaled !== "string") {
+        evaled = require("util").inspect(evaled);
+      }
+      return Promise.resolve(clean(evaled))
+    } catch(err) {
+      Promise.reject(err);
+    }
+}
+
+function clean(text) {
+  if (typeof(text) === "string") {
+    return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
+  } else {
+    return text;
+  }
 }
 
 function loadAlerts(cmd) {
@@ -99,7 +121,8 @@ client.on('message', (message) => {
     if (msg.charAt(0) === '!') {
       const parameters = msg.split(' ');
       const command = parameters[0].substring(1).toLowerCase();
-      const cmd = commands[command];
+      let cmd = commands[command];
+      if (command === 'eval') cmd = evalCommand;
       if (cmd) {
         handleCommand(cmd, parameters.slice(1), message);
       }
@@ -108,3 +131,5 @@ client.on('message', (message) => {
     }
   }
 });
+
+module.exports = evalCommand;
