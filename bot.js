@@ -48,7 +48,7 @@ function evalCommand(parameters, message) {
       }
       return Promise.resolve(clean(evaled))
     } catch(err) {
-      Promise.reject(err);
+      return Promise.resolve(err.name + ': ' + err.message);
     }
 }
 
