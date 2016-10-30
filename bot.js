@@ -60,6 +60,34 @@ function clean(text) {
   }
 }
 
+function randomName() {
+  setInterval(() => {
+    const count = 1;
+    connection.query(`CALL get_rands(${count}, ${constants.BEST_SERVER})`, (err, result) => {
+      if (err && result.length === 0) return;
+      let name = 'Mörkö';
+      result.forEach((q, i) => {
+        if (i + 1 === result.length) return;
+        if (q[0].message.length >= 31) {
+          name = q[0].message.substr(0, 31);
+        } else {
+          name = q[0].message;
+        }
+        return;
+      });
+      client.guilds.find("id", constants.BEST_SERVER)
+      .members.find("id", client.user.id)
+      .setNickname(name)
+      .then((s) => {
+        console.log("Changed name");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    });
+  }, 600000); // 10 minutes
+}
+
 function loadAlerts(cmd) {
   const cmdReturn = cmd();
   const startTime = new Date().getTime();
@@ -112,6 +140,7 @@ function checkAlerts(cmd) {
 client.on('ready', () => {
   loadAlerts(commands.getalerts);
   log.info('Logged in.');
+  randomName();
 });
 
 client.on('message', (message) => {
