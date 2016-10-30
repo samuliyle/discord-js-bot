@@ -68,10 +68,12 @@ function randomName() {
       let name = 'Mörkö';
       result.forEach((q, i) => {
         if (i + 1 === result.length) return;
-        if (q[0].message.length >= 31) {
-          name = q[0].message.substr(0, 31);
+        const words = q[0].message.split(" ");
+        const rand = Math.floor(Math.random() * words.length);
+        if (words[rand].length >= 31) {
+          name = words[rand].substr(0, 31);
         } else {
-          name = q[0].message;
+          name = words[rand];
         }
         return;
       });
