@@ -10,20 +10,25 @@ const loggerConfig = {
   showTimestamp: true,
 };
 
+let loggedIn = false;
+
 let alerts;
 
 const client = new Discord.Client();
 client.login(constants.LOGIN_TOKEN);
 const log = new Logger(loggerConfig);
 
-function handleCommand(cmd, parameters, message) {
-  let cmdReturn = cmd(parameters, message);
+function handleCommand(cmd, parameters, message, commandName) {
+  const cmdReturn = cmd(parameters, message);
   const startTime = new Date().getTime();
+  console.log(commandName);
+  console.log(parameters);
   if (cmdReturn instanceof Promise) {
     cmdReturn.then((res) => {
       const executionTime = new Date().getTime() - startTime;
       console.log(`Execution time: ${executionTime}`);
       if (res) message.channel.sendMessage(res);
+      logCommand(commandName, parameters, message, executionTime, 1);
     })
     .catch((err) => {
       log.error(`Message: ${message.content} Error: ${err}`);
@@ -34,6 +39,14 @@ function handleCommand(cmd, parameters, message) {
 function logMessage(msg) {
   connection.query('INSERT INTO messages (message, userId, channelId, username, time) values(?, ?, ?, ?, ?)',
   [msg.content, msg.author.id, msg.channel.id, msg.author.username, new Date()], (err) => {
+    if (err) throw err;
+  });
+}
+
+function logCommand(command, parameters, msg, executionTime, ownCommand) {
+  if (parameters.length === 0) parameters = null;
+  connection.query('INSERT INTO commands (command, parameters, username, user_id, channel_id, guild_id, execution_time, time, own_command) values(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+  [command, parameters, msg.author.username, msg.author.id, msg.channel.id, msg.guild.id, executionTime, new Date(), ownCommand], (err) => {
     if (err) throw err;
   });
 }
@@ -140,9 +153,12 @@ function checkAlerts(cmd) {
 }
 
 client.on('ready', () => {
-  loadAlerts(commands.getalerts);
   log.info('Logged in.');
-  randomName();
+  if (!loggedIn) {
+    loggedIn = true;
+    loadAlerts(commands.getalerts);
+    randomName();
+  }
 });
 
 client.on('message', (message) => {
@@ -152,10 +168,13 @@ client.on('message', (message) => {
     if (msg.charAt(0) === '!') {
       const parameters = msg.split(' ');
       const command = parameters[0].substring(1).toLowerCase();
+      if (command.length === 0) return;
       let cmd = commands[command];
       if (command === 'eval') cmd = evalCommand;
       if (cmd) {
-        handleCommand(cmd, parameters.slice(1), message);
+        handleCommand(cmd, parameters.slice(1), message, command);
+      } else {
+        logCommand(command, parameters.slice(1), message, null, 0);
       }
     } else {
       logMessage(message);
