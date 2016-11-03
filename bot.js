@@ -21,8 +21,6 @@ const log = new Logger(loggerConfig);
 function handleCommand(cmd, parameters, message, commandName) {
   const cmdReturn = cmd(parameters, message);
   const startTime = new Date().getTime();
-  console.log(commandName);
-  console.log(parameters);
   if (cmdReturn instanceof Promise) {
     cmdReturn.then((res) => {
       const executionTime = new Date().getTime() - startTime;
@@ -44,9 +42,12 @@ function logMessage(msg) {
 }
 
 function logCommand(command, parameters, msg, executionTime, ownCommand) {
-  if (parameters.length === 0) parameters = null;
+  let parameter = null;
+  if (parameters.length !== 0) {
+    parameter = parameters.join(" ");
+  }
   connection.query('INSERT INTO commands (command, parameters, username, user_id, channel_id, guild_id, execution_time, time, own_command) values(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-  [command, parameters, msg.author.username, msg.author.id, msg.channel.id, msg.guild.id, executionTime, new Date(), ownCommand], (err) => {
+  [command, parameter, msg.author.username, msg.author.id, msg.channel.id, msg.guild.id, executionTime, new Date(), ownCommand], (err) => {
     if (err) throw err;
   });
 }
@@ -90,11 +91,12 @@ function randomName() {
         }
         return;
       });
+      if (name.length === 0) return;
       client.guilds.find("id", constants.BEST_SERVER)
       .members.find("id", client.user.id)
       .setNickname(name)
       .then((s) => {
-        console.log("Changed name");
+        console.log(`Changed name to ${name}`);
       })
       .catch((err) => {
         console.log(err);
