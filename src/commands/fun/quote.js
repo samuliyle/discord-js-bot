@@ -78,7 +78,6 @@ function findLastOccurance(parameters, message) {
     connection.query('SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time DESC LIMIT 1', [message.channel.id, finalPhrase], (err, result) => {
       if (err) return reject(err);
       if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
-      console.log(result);
       const date = new Date(result[0].time);
       resolve(`${result[0].username}: "${result[0].message}" (${formatTime(date, false)})\n`);
     });
