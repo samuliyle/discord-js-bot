@@ -67,11 +67,11 @@ function commandInfo(parameters, message) {
             cmdInfo.exeCount++;
           }
           if (parameter) {
-            parameter.toLowerCase();
-            if (hasOwnPropertyCaseInsensitive(cmdInfo.parameters, parameter)) {
-              cmdInfo.parameters[parameter].usageCount++;
+            fixedParameter = parameter.toLowerCase();
+            if (hasOwnPropertyCaseInsensitive(cmdInfo.parameters, fixedParameter)) {
+              cmdInfo.parameters[fixedParameter].usageCount++;
             } else {
-              cmdInfo.parameters[parameter] = {
+              cmdInfo.parameters[fixedParameter] = {
                 usageCount: 1
               };
             }
