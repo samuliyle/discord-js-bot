@@ -25,14 +25,18 @@ function randomSubredditImage(subReddit) {
       if (imageResult.data.length === 0) return (resolve(`${subReddit} subreddit doesnt exist or its inactive.`));
       const rand = Math.floor(Math.random() * imageResult.data.length);
       const image = imageResult.data[rand];
-      let imageLink = '';
-      if (image.animated && image.type === 'image/gif') {
-        imageLink = image.gifv;
-      } else if (image.link) {
-        imageLink = image.link;
+      if (image) {
+        let imageLink = '';
+        if (image.animated && image.type === 'image/gif') {
+          imageLink = image.gifv;
+        } else if (image.link) {
+          imageLink = image.link;
+        }
+        const title = image.title ? image.title : '';
+        resolve(`${imageLink} ${title}`);
+      } else {
+        return (resolve('Imgur API appears to temporary unavailable. :thinking:'));
       }
-      const title = image.title ? image.title : '';
-      resolve(`${imageLink} ${title}`);
     });
     req.on('error', (err) => {
       reject(err);
