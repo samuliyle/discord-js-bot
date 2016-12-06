@@ -55,7 +55,7 @@ function commandInfo(parameters, message) {
           const userId = cmd.user_id;
           const exeTime = cmd.execution_time;
           const time = cmd.time;
-          const parameter = cmd.parameters.toLowerCase();
+          const parameter = cmd.parameters;
           if (exeTime) {
             if (cmdInfo.executionTimes.maxExecutionTime < exeTime) {
               cmdInfo.executionTimes.maxExecutionTime = exeTime;
@@ -67,6 +67,7 @@ function commandInfo(parameters, message) {
             cmdInfo.exeCount++;
           }
           if (parameter) {
+            parameter.toLowerCase();
             if (hasOwnPropertyCaseInsensitive(cmdInfo.parameters, parameter)) {
               cmdInfo.parameters[parameter].usageCount++;
             } else {
