@@ -133,7 +133,6 @@ Last usage: **${formatTime(cmdInfo.lastUsage, true)}**`
 function topUsage(users, count, topUser) {
   let sortable = [];
   let topUsers = "";
-  console.log(users);
   if (topUser) {
     for (const user in users) {
       sortable.push([users[user].username, users[user].usageCount])
