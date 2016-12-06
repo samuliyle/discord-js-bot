@@ -3,6 +3,14 @@ const connection = require('../../../database');
 
 const formatTime = require('../helpers/formattime');
 
+function hasOwnPropertyCaseInsensitive(obj, property) {
+    var props = [];
+    for (var i in obj) if (obj.hasOwnProperty(i)) props.push(i);
+    var prop;
+    while (prop = props.pop()) if (prop.toLowerCase() === property.toLowerCase()) return true;
+    return false;
+}
+
 function commandsInfo(message) {
   return;
   return new Promise((resolve, reject) => {
@@ -22,11 +30,12 @@ function commandInfo(parameters, message) {
     return commandsInfo(message);
   } else {
     return new Promise((resolve, reject) => {
-      connection.query('SELECT * from commands where command = ?', parameters[0], (err, result) => {
+      connection.query('SELECT * from commands where command = ?', parameters[0].toLowerCase(), (err, result) => {
         if (err) return reject(err);
         if (result.length === 0) return (resolve(`No info found on command '${parameters[0]}'`));
         let cmdInfo = {
           usageCount: 0,
+          channelCount: 0,
           exeCount: 0,
           parameters: {},
           allUsers: {},
@@ -43,9 +52,10 @@ function commandInfo(parameters, message) {
         for (cmd of result) {
           cmdInfo.usageCount++;
           const username = cmd.username;
+          const userId = cmd.user_id;
           const exeTime = cmd.execution_time;
           const time = cmd.time;
-          const parameter = cmd.parameters;
+          const parameter = cmd.parameters.toLowerCase();
           if (exeTime) {
             if (cmdInfo.executionTimes.maxExecutionTime < exeTime) {
               cmdInfo.executionTimes.maxExecutionTime = exeTime;
@@ -57,7 +67,7 @@ function commandInfo(parameters, message) {
             cmdInfo.exeCount++;
           }
           if (parameter) {
-            if (cmdInfo.parameters.hasOwnProperty(parameter)) {
+            if (hasOwnPropertyCaseInsensitive(cmdInfo.parameters, parameter)) {
               cmdInfo.parameters[parameter].usageCount++;
             } else {
               cmdInfo.parameters[parameter] = {
@@ -66,18 +76,23 @@ function commandInfo(parameters, message) {
             }
           }
           if (cmd.guild_id === message.guild.id) {
-            if (cmdInfo.channelUsers.hasOwnProperty(username)) {
-              cmdInfo.channelUsers[username].usageCount++;
+            if (cmdInfo.channelUsers.hasOwnProperty(userId)) {
+              cmdInfo.channelUsers[userId].usageCount++;
+              cmdInfo.allUsers[userId].username = username;
             } else {
-              cmdInfo.channelUsers[username] = {
+              cmdInfo.channelUsers[userId] = {
+                username: username,
                 usageCount: 1
               };
             }
+            cmdInfo.channelCount++;
           }
-          if (cmdInfo.allUsers.hasOwnProperty(username)) {
-            cmdInfo.allUsers[username].usageCount++;
+          if (cmdInfo.allUsers.hasOwnProperty(userId)) {
+            cmdInfo.allUsers[userId].usageCount++;
+            cmdInfo.allUsers[userId].username = username;
           } else {
-            cmdInfo.allUsers[username] = {
+            cmdInfo.allUsers[userId] = {
+              username: username,
               usageCount: 1
             };
           }
@@ -98,13 +113,12 @@ function commandInfo(parameters, message) {
 Min execution time: **${cmdInfo.executionTimes.minExecutionTime}**ms
 Max execution time: **${cmdInfo.executionTimes.maxExecutionTime}**ms`
         }
-        topUsage(cmdInfo.allUsers);
         resolve(
 `Command: **${parameters[0]}**
 Usage count: **${cmdInfo.usageCount}**
-Channel usage count: **${cmdInfo.usageCount}**
-Top 3 users: ${topUsage(cmdInfo.allUsers, 3) || ''}
-Channel top 3 users: ${topUsage(cmdInfo.channelUsers, 3) || ''}
+Channel usage count: **${cmdInfo.channelCount}**
+Top 3 users: ${topUsage(cmdInfo.allUsers, 3, true) || ''}
+Channel top 3 users: ${topUsage(cmdInfo.channelUsers, 3, true) || ''}
 Top 3 parameters: ${topUsage(cmdInfo.parameters, 3) || ''}
 ${exeTimes || 'Mörkö command: **false**'}
 First usage: **${formatTime(cmdInfo.firstUsage, true)}**
@@ -115,11 +129,18 @@ Last usage: **${formatTime(cmdInfo.lastUsage, true)}**`
   }
 }
 
-function topUsage(users, count) {
+function topUsage(users, count, topUser) {
   let sortable = [];
   let topUsers = "";
-  for (const user in users) {
-    sortable.push([user, users[user].usageCount])
+  console.log(users);
+  if (topUser) {
+    for (const user in users) {
+      sortable.push([users[user].username, users[user].usageCount])
+    }
+  } else {
+    for (const user in users) {
+      sortable.push([user, users[user].usageCount])
+    }
   }
   sortable.sort(function(a, b) {
       return b[1] - a[1];
