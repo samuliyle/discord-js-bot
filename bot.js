@@ -69,8 +69,8 @@ function getMessages(channel, id) {
 }
 
 function fetchMsg() {
-  const channel = client.channels.find("id", "107936658980093952");
-  let id = '255738369978531850';
+  const channel = client.channels.find("id", "95592065215246336");
+  let id = '242930398051434496';
   getMessages(channel, id);
 }
 
