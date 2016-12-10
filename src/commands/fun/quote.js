@@ -44,38 +44,37 @@ function searchPhrase(parameters, message) {
 
 function phraseCount(parameters, message) {
   const channel = message.channel;
-  if (parameters.length === 0) return
+  if (parameters.length === 0) return;
   const phrase = parameters.join(' ');
-  const finalPhrase = `%${phrase}%`;
+  let finalPhrase = `%${phrase}%`;
+  if (phrase.indexOf('>') !== -1) {
+    finalPhrase = `%${phrase.substring(0, phrase.indexOf('>')-1)}%`;
+  }
+  let query = 'SELECT count(*) FROM messages WHERE message LIKE ? and channelId = ?';
+  let queryParameters = [finalPhrase, message.channel.id];
+  if (parameters.length >= 3) {
+    if (parameters[parameters.length - 2] === ">") {
+      queryParameters.push(parameters[parameters.length - 1]);
+      query += ' and username = ?';
+    }
+  }
   return new Promise((resolve, reject) => {
-    connection.query('SELECT count(*) FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, message.channel.id], (err, result) => {
+    connection.query(query, queryParameters, (err, result) => {
       if (err) return reject(err);
       return (resolve(`${result[0]['count(*)']}`));
     });
   });
 }
 
-// TODO: Fix copy pasterino code
-function findFirstOccurance(parameters, message) {
+function findOccurance(parameters, message, commandName) {
   if (parameters.length === 0) return;
+  let order = "ASC";
+  console.log(commandName);
+  if (commandName === "last") order = "DESC";
   const phrase = parameters.join(' ');
   const finalPhrase = `%${phrase}%`;
   return new Promise((resolve, reject) => {
-    connection.query('SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time ASC LIMIT 1', [message.channel.id, finalPhrase], (err, result) => {
-      if (err) return reject(err);
-      if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
-      const date = new Date(result[0].time);
-      resolve(`${result[0].username}: "${result[0].message}" (${formatTime(date, false)})\n`);
-    });
-  });
-}
-
-function findLastOccurance(parameters, message) {
-  if (parameters.length === 0) return;
-  const phrase = parameters.join(' ');
-  const finalPhrase = `%${phrase}%`;
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time DESC LIMIT 1', [message.channel.id, finalPhrase], (err, result) => {
+    connection.query(`SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time ${order} LIMIT 1`, [message.channel.id, finalPhrase], (err, result) => {
       if (err) return reject(err);
       if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
       const date = new Date(result[0].time);
@@ -89,10 +88,8 @@ module.exports = {
   randomquote: randomQuote,
   phrase: searchPhrase,
   phrasecount: phraseCount,
-  last: findLastOccurance,
-  lastphrase: findLastOccurance,
-  lastoccurance: findLastOccurance,
-  first: findFirstOccurance,
-  firstphrase: findFirstOccurance,
-  firstoccurance: findFirstOccurance,
+  last: findOccurance,
+  lastphrase: findOccurance,
+  first: findOccurance,
+  firstphrase: findOccurance,
 };

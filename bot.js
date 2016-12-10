@@ -18,64 +18,8 @@ const client = new Discord.Client();
 client.login(constants.LOGIN_TOKEN);
 const log = new Logger(loggerConfig);
 
-function getFirstWord(str) {
-  if (str.indexOf(' ') === -1)
-    return str;
-  else
-    return str.substr(1, str.indexOf(' '));
-};
-
-// 242930398051434496
-function getMessages(channel, id) {
-  channel.fetchMessages({limit: 100, before: id})
-  .then((messages) => {
-    console.log(`Received ${messages.size} messages`);
-    const d = messages.array();
-    let count = 0;
-    for (let i = 0; i < d.length; i++) {
-      if (d[i].content.startsWith('!') && d[i].content.length > 1) {
-        let command = "";
-        let parameter = null;
-        let ownCommand = 0;
-        if (d[i].content.indexOf(' ') !== -1) {
-          command = d[i].content.substring(1, d[i].content.indexOf(' ')).toLowerCase();
-          parameter = d[i].content.substring(d[i].content.indexOf(' ') + 1);
-        } else {
-          command = d[i].content.substring(1).toLowerCase();
-        }
-        let cmd = commands[command];
-        if (cmd || command === 'eval') {
-          ownCommand = 1;
-        }
-        connection.query('INSERT INTO commands (command, parameters, username, user_id, channel_id, guild_id, execution_time, time, own_command) values(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [command, parameter, d[i].author.username, d[i].author.id, d[i].channel.id, d[i].guild.id, null, d[i].createdAt, ownCommand], (err) => {
-          if (err) {
-            console.log(`mysql error skipped: ${command} ${parameter}`);
-          }
-        });
-        count++;
-      }
-    }
-    if (d.length === 0) {
-      console.log(`empty. stopping`);
-      yes = false;
-      return;
-    }
-    console.log(`inserted ${count} rows`);
-    console.log(`last message date: ${d[d.length-1].createdAt} || id: ${d[d.length-1].id} `);
-    getMessages(channel, d[d.length-1].id);
-  })
-  .catch(console.error);
-}
-
-function fetchMsg() {
-  const channel = client.channels.find("id", "95592065215246336");
-  let id = '242930398051434496';
-  getMessages(channel, id);
-}
-
 function handleCommand(cmd, parameters, message, commandName) {
-  const cmdReturn = cmd(parameters, message);
+  const cmdReturn = cmd(parameters, message, commandName);
   const startTime = new Date().getTime();
   if (cmdReturn instanceof Promise) {
     cmdReturn.then((res) => {

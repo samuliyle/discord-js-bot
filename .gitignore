@@ -4,6 +4,7 @@ config
 # Logs
 logs
 *.log
+logs.js
 npm-debug.log*
 
 # Runtime data
