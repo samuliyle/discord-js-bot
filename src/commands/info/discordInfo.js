@@ -28,7 +28,6 @@ function userInfo(parameters, message) {
           id = parameters[0].substring(2, parameters[0].length - 1);
         }
         author = message.guild.members.find('id', id);
-        console.log(`id: ${author}`);
       }
     }
   }
@@ -38,8 +37,8 @@ function userInfo(parameters, message) {
     } else {
       userinfo = `**Name**: ${author.username}\n**Id**: ${author.id}\n**Creation date**: ${formatTime(author.createdAt, true)}`;
     }
-    if (author.avatarURL) {
-      userinfo += `\n**Avatar**: ${author.avatarURL}`;
+    if (author.avatarURL || author.user.avatarURL) {
+      userinfo += `\n**Avatar**: ${author.avatarURL || author.user.avatarURL}`;
     }
   } else {
     userinfo = `Could not find user '${parameters[0]}' in this channel. :thinking: Might not be cached, try using a mention.`;
