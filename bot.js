@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const Logger = require('basic-logger');
 const Promise = require('bluebird');
+const Snowball = require('snowball');
 
 const constants = require('./config/constants');
 const commands = require('./src/commands/index');
@@ -11,7 +12,6 @@ const loggerConfig = {
 };
 
 let loggedIn = false;
-
 let alerts;
 
 const client = new Discord.Client();
@@ -80,6 +80,17 @@ function clean(text) {
 
 function randomName() {
   setInterval(() => {
+    const finalPhrase = `%imgur.com%`;
+    connection.query('SELECT username, message, time FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, constants.BEST_SERVER], (err, result) => {
+      if (err) return reject(err);
+      if (result.length !== 0) {
+        const rand = Math.floor(Math.random() * result.length);
+        const picture = result[rand];
+        client.user.setAvatar('http://i.imgur.com/4MVmK5a.png')
+        .then(user => console.log('xd'))
+        .catch(console.error);
+      }
+    });
     const count = 1;
     connection.query(`CALL get_rands(${count}, ${constants.BEST_SERVER})`, (err, result) => {
       if (err && result.length === 0) return;
@@ -108,7 +119,7 @@ function randomName() {
         console.log(err);
       });
     });
-  }, 600000); // 10 minutes
+  }, 3600000); // 60 minutes
 }
 
 function loadAlerts(cmd) {
@@ -173,6 +184,12 @@ client.on('message', (message) => {
   const msg = message.content;
   if (msg) {
     if (message.author.id === constants.ID || message.author.bot) return;
+    const splitted = msg.split(' ');
+    for (let i = 0; i < splitted.length; i++) {
+      stemmer.setCurrent(splitted[i]);
+      stemmer.stem();
+      predict(stemmer.getCurrent());
+    }
     if (msg.charAt(0) === '!') {
       const parameters = msg.split(' ');
       const command = parameters[0].substring(1).toLowerCase();
