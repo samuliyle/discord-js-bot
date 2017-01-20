@@ -172,12 +172,6 @@ client.on('message', (message) => {
   const msg = message.content;
   if (msg) {
     if (message.author.id === constants.ID || message.author.bot) return;
-    const splitted = msg.split(' ');
-    for (let i = 0; i < splitted.length; i++) {
-      stemmer.setCurrent(splitted[i]);
-      stemmer.stem();
-      predict(stemmer.getCurrent());
-    }
     if (msg.charAt(0) === '!') {
       const parameters = msg.split(' ');
       const command = parameters[0].substring(1).toLowerCase();
