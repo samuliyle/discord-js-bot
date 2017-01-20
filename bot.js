@@ -80,17 +80,6 @@ function clean(text) {
 
 function randomName() {
   setInterval(() => {
-    const finalPhrase = `%imgur.com%`;
-    connection.query('SELECT username, message, time FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, constants.BEST_SERVER], (err, result) => {
-      if (err) return reject(err);
-      if (result.length !== 0) {
-        const rand = Math.floor(Math.random() * result.length);
-        const picture = result[rand];
-        client.user.setAvatar('http://i.imgur.com/4MVmK5a.png')
-        .then(user => console.log('xd'))
-        .catch(console.error);
-      }
-    });
     const count = 1;
     connection.query(`CALL get_rands(${count}, ${constants.BEST_SERVER})`, (err, result) => {
       if (err && result.length === 0) return;
