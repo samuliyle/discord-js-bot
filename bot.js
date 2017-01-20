@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const Logger = require('basic-logger');
 const Promise = require('bluebird');
-const Snowball = require('snowball');
 
 const constants = require('./config/constants');
 const commands = require('./src/commands/index');
