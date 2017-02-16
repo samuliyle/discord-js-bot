@@ -1,6 +1,7 @@
 # Login
 config
 machinelearning.js
+yarn.lock
 
 # Logs
 logs

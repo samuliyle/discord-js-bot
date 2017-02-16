@@ -1,10 +1,28 @@
 const expect = require('chai').expect;
+const mysql = require('mysql');
+
+const constants = require('../config/constants');
 
 const eightBall = require('../src/commands/fun/8ball');
 const bing = require('../src/commands/fun/bing');
 const cat = require('../src/commands/fun/cat');
 const chat = require('../src/commands/fun/chat');
 const imgur = require('../src/commands/fun/imgur');
+
+describe('Access to DB', function(){
+   describe('connect', function(){
+        it('should connect to DB', function(done){
+            var connection = mysql.createConnection({
+              host: constants.DB_URL,
+              user: constants.DB_USERNAME,
+              password: constants.DB_PASSWORD,
+              database: constants.DB,
+              charset: 'utf8mb4'
+            });
+            connection.connect(done);
+        });
+    })
+});
 
 describe('eightBall', function() {
   const answers = require('../src/data/eightball');
@@ -61,6 +79,7 @@ describe('chat', function() {
       .then(function (data) {
         expect(data).to.be.a('string');
         expect(data).to.not.be.empty;
+        expect(data).to.not.be.equal('<html>');
       });
   })
 });
