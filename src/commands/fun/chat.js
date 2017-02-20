@@ -1,20 +1,17 @@
 const Cleverbot = require('cleverbot-node');
 const Promise = require('bluebird');
 
-const cleverBot = new Cleverbot();
+const constants = require('../../../config/constants.js');
+
+const cleverbot = new Cleverbot();
+cleverbot.configure({botapi: constants.CLEVERBOT});
 
 function chat(message) {
   if (message.length === 0) return (Promise.resolve('Yes...?'));
   const msg = message.join(' ');
   return new Promise((resolve, reject) => {
-    Cleverbot.prepare(() => {
-      try {
-        cleverBot.write(message, (response) => {
-          resolve(response.message);
-        });
-      } catch (err) {
-        reject(err);
-      }
+    cleverbot.write(msg, (response) => {
+      resolve(response.output);
     });
   });
 }

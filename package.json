@@ -13,8 +13,7 @@
   "dependencies": {
     "basic-logger": "^0.4.4",
     "bluebird": "^3.4.6",
-    "cleverbot": "^1.0.1",
-    "cleverbot-node": "0.2.8",
+    "cleverbot-node": "0.3.3",
     "discord.js": "^10.0.1",
     "glob": "^7.0.6",
     "mysql": "^2.11.1",
