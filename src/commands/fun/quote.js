@@ -1,6 +1,6 @@
 const Promise = require('bluebird');
 
-const connection = require('../../../database');
+const database = require('../../../database');
 const formatTime = require('../helpers/formattime');
 
 function randomQuote(parameters, message) {
@@ -12,7 +12,7 @@ function randomQuote(parameters, message) {
     }
   }
   return new Promise((resolve, reject) => {
-    connection.query(`CALL get_rands(${count}, ${channel.id})`, (err, result) => {
+    database.connection.query(`CALL get_rands(${count}, ${channel.id})`, (err, result) => {
       if (err) return reject(err);
       let returnMessage = '';
       result.forEach((q, i) => {
@@ -31,7 +31,7 @@ function searchPhrase(parameters, message) {
   const phrase = parameters.join(' ');
   const finalPhrase = `%${phrase}%`;
   return new Promise((resolve, reject) => {
-    connection.query('SELECT username, message, time FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, message.channel.id], (err, result) => {
+    database.connection.query('SELECT username, message, time FROM messages WHERE message LIKE ? and channelId = ?', [finalPhrase, message.channel.id], (err, result) => {
       if (err) return reject(err);
       if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
       const rand = Math.floor(Math.random() * result.length);
@@ -59,7 +59,7 @@ function phraseCount(parameters, message) {
     }
   }
   return new Promise((resolve, reject) => {
-    connection.query(query, queryParameters, (err, result) => {
+    database.connection.query(query, queryParameters, (err, result) => {
       if (err) return reject(err);
       return (resolve(`${result[0]['count(*)']}`));
     });
@@ -69,12 +69,11 @@ function phraseCount(parameters, message) {
 function findOccurance(parameters, message, commandName) {
   if (parameters.length === 0) return;
   let order = "ASC";
-  console.log(commandName);
   if (commandName === "last") order = "DESC";
   const phrase = parameters.join(' ');
   const finalPhrase = `%${phrase}%`;
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time ${order} LIMIT 1`, [message.channel.id, finalPhrase], (err, result) => {
+    database.connection.query(`SELECT username, message, time FROM messages WHERE channelId = ? and message LIKE ? ORDER BY time ${order} LIMIT 1`, [message.channel.id, finalPhrase], (err, result) => {
       if (err) return reject(err);
       if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
       const date = new Date(result[0].time);

@@ -1,7 +1,7 @@
 const Promise = require('bluebird');
 const https = require('https');
 
-const connection = require('../../../database');
+const database = require('../../../database');
 const constants = require('../../../config/constants');
 
 const alerts = {};
@@ -37,7 +37,7 @@ function findAlert(alert) {
 function getAlerts() {
   if (Object.keys(alerts).length !== 0) return;
   return new Promise((resolve, reject) => {
-    connection.query('SELECT userId, twitchChannel, channelId FROM alerts', (err, result) => {
+    database.connection.query('SELECT userId, twitchChannel, channelId FROM alerts', (err, result) => {
       if (err) return reject(err);
       if (result.length === 0) return (resolve('No alerts.'));
       modifyAlerts(result);
@@ -80,7 +80,6 @@ function addAlert(parameters, message) {
   if (status instanceof Promise) {
     return new Promise((resolve, reject) => {
       status.then((res) => {
-        console.log(res);
         if (res) {
           if (res === 404) return resolve(`Channel ${parameters[0]} does not exist.`);
           const alertExists = modifyAlerts([{
@@ -89,7 +88,7 @@ function addAlert(parameters, message) {
             channelId: message.channel.id,
           }]);
           if (alertExists) return resolve(`You already have a alert for channel ${parameters[0]}.`);
-          connection.query('INSERT INTO alerts (userId, twitchChannel, channelId) VALUES(?, ?, ?)',
+          database.connection.query('INSERT INTO alerts (userId, twitchChannel, channelId) VALUES(?, ?, ?)',
           [message.author.id, parameters[0], message.channel.id], (err, result) => {
             if (err) return reject(err);
             resolve('Alert added. :ok_hand:');
@@ -110,7 +109,7 @@ function removeAlert(parameters, message) {
   const index = findAlert({ channelId: message.channel.id, twitchChannel: parameters[0], userId: message.author.id });
   return new Promise((resolve, reject) => {
     if (index === -1) return (resolve(`You dont have an alert to channel ${parameters[0]}.`));
-    connection.query('DELETE FROM alerts WHERE userId = ? AND twitchChannel = ? AND channelId = ?',
+    database.connection.query('DELETE FROM alerts WHERE userId = ? AND twitchChannel = ? AND channelId = ?',
       [message.author.id, parameters[0], message.channel.id], (err) => {
         if (err) return reject(err);
         alerts[parameters[0]].alert.splice(index, 1);

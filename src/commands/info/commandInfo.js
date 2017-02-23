@@ -1,26 +1,23 @@
 const Promise = require('bluebird');
-const connection = require('../../../database');
+const database = require('../../../database');
 
 const formatTime = require('../helpers/formattime');
 
 function hasOwnPropertyCaseInsensitive(obj, property) {
-    var props = [];
-    for (var i in obj) if (obj.hasOwnProperty(i)) props.push(i);
-    var prop;
-    while (prop = props.pop()) if (prop.toLowerCase() === property.toLowerCase()) return true;
-    return false;
+  var props = [];
+  for (var i in obj) if (obj.hasOwnProperty(i)) props.push(i);
+  var prop;
+  while (prop = props.pop()) if (prop.toLowerCase() === property.toLowerCase()) return true;
+  return false;
 }
 
 function commandsInfo(message) {
   return;
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * from commands where guild_id = ?', message.guild.id, (err, result) => {
+    database.connection.query('SELECT * from commands where guild_id = ?', message.guild.id, (err, result) => {
       if (err) return reject(err);
       if (result.length === 0) return (resolve(`No commands used in this channel :thinking:`));
       resolve(result.length);
-      // Own commands
-      // Top commands
-      // users
     });
   });
 }
@@ -30,7 +27,7 @@ function commandInfo(parameters, message) {
     return commandsInfo(message);
   } else {
     return new Promise((resolve, reject) => {
-      connection.query('SELECT * from commands where command = ?', parameters[0].toLowerCase(), (err, result) => {
+      database.connection.query('SELECT * from commands where command = ?', parameters[0].toLowerCase(), (err, result) => {
         if (err) return reject(err);
         if (result.length === 0) return (resolve(`No info found on command '${parameters[0]}'`));
         let cmdInfo = {
