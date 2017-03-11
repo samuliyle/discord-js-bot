@@ -35,7 +35,7 @@ function randomSubredditImage(subReddit) {
         const title = image.title ? image.title : '';
         resolve(`${imageLink} ${title}`);
       } else {
-        return (resolve('Imgur API appears to temporary unavailable. :thinking:'));
+        return (resolve('Imgur API appears to be temporary unavailable. :thinking:'));
       }
     });
     req.on('error', (err) => {
