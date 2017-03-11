@@ -45,20 +45,22 @@ function randomName(client) {
       let name = 'Mörkö';
       result.forEach((q, i) => {
         if (i + 1 === result.length) return;
-        if (q[0].message) {
-          const words = q[0].message.split(" ");
-          const rand = Math.floor(Math.random() * words.length);
-          if (words[rand].length >= 31) {
-            name = words[rand].substr(0, 31);
-          } else {
-            name = words[rand];
+        if (q[0]) {
+          if (q[0].message) {
+            const words = q[0].message.split(" ");
+            const rand = Math.floor(Math.random() * words.length);
+            if (words[rand].length >= 31) {
+              name = words[rand].substr(0, 31);
+            } else {
+              name = words[rand];
+            }
           }
+          return;
         }
-        return;
       });
       if (name.length === 0) return;
-      client.guilds.find("id", constants.BEST_SERVER)
-      .members.find("id", client.user.id)
+      client.guilds.get(constants.BEST_SERVER)
+      .members.get(client.user.id)
       .setNickname(name)
       .then((s) => {
         console.log(`Changed name to ${name}`);
