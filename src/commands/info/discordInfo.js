@@ -46,6 +46,10 @@ function userInfo(parameters, message) {
   return Promise.resolve(userinfo);
 }
 
+function commands() {
+  return Promise.resolve(`Commands: https://github.com/wraithyz/discord-js-bot`);
+}
+
 function botInfo() {
   return Promise.resolve(`Made by **Wraithy**.\n**GitHub:** https://github.com/wraithyz/discord-js-bot`);
 }
@@ -56,4 +60,6 @@ module.exports = {
   guildinfo: guildInfo,
   info: botInfo,
   bot: botInfo,
+  commands: commands,
+  help: commands
 };

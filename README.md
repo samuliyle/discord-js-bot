@@ -11,8 +11,9 @@ Info commands
 
 Command | Parameters | Description
 --- | --- | ---
-Command | command name | Usage stats of command
 Userinfo | username/nickname/mention | User info (creation date etc)
+Command | command name | Usage stats of command
+Commands |  | List of commands
 Channelinfo |  | Channel info (creation date etc)
 Guildinfo |  | Guild info (creation date etc)
 Info |  | Info about the bot
@@ -54,3 +55,4 @@ Various commands
 Command | Parameters | Description
 --- | --- | ---
 8Ball | question | 8Ball answer
+Remind | minutes, message | Reminds after given minutes
