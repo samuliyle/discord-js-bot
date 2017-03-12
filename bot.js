@@ -64,7 +64,7 @@ client.on('ready', () => {
   log.info('Logged in.');
   if (!loggedIn) {
     loggedIn = true;
-    alerts.loadAlerts(commands.getalerts, client);
+    alerts.loadAlerts(commands.getalerts, client, commands.checkalert);
     database.randomName(client);
   }
 });

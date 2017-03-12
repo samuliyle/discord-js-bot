@@ -1,6 +1,7 @@
+const Promise = require('bluebird');
 let alerts;
 
-function loadAlerts(cmd, client) {
+function loadAlerts(cmd, client, callback) {
   const cmdReturn = cmd();
   const startTime = new Date().getTime();
   if (cmdReturn instanceof Promise) {
@@ -8,7 +9,7 @@ function loadAlerts(cmd, client) {
       const executionTime = new Date().getTime() - startTime;
       console.log(`Execution time: ${executionTime}`);
       alerts = res;
-      checkAlerts(commands.checkalert, client);
+      checkAlerts(callback, client);
     })
     .catch((err) => {
       log.error(`Error: ${err}`);
@@ -34,7 +35,7 @@ function checkAlerts(cmd, client) {
                 msg += `<@${obj.message[i].userId}> `
               }
               msg += res.message;
-              const channel = client.channels.find('id', key);
+              const channel = client.channels.get(key);
               if (channel) {
                 channel.sendMessage(msg);
               }
