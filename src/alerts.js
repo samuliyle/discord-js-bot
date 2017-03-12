@@ -1,4 +1,11 @@
 const Promise = require('bluebird');
+const Logger = require('basic-logger');
+
+const loggerConfig = {
+  showTimestamp: true,
+};
+const log = new Logger(loggerConfig);
+
 let alerts;
 
 function loadAlerts(cmd, client, callback) {

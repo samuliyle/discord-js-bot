@@ -68,6 +68,7 @@ function channelExists(channel) {
       resolve(channelResult.status);
     });
     req.on('error', (err) => {
+      console.log(err);
       reject(err);
     });
     req.end();
@@ -98,6 +99,7 @@ function addAlert(parameters, message) {
         }
       })
       .catch((err) => {
+        console.log(err);
         reject(err);
       });
     });
@@ -183,6 +185,7 @@ function checkAlert(channel) {
       }
     });
     req.on('error', (err) => {
+      console.log(err);
       reject(err);
     });
     req.end();
