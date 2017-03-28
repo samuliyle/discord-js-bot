@@ -19,7 +19,7 @@ function randomQuote(parameters, message) {
       result.forEach((q, i) => {
         if (i + 1 === result.length) return;
         const quote = q[0];
-        if (_.isNil(quote)) {
+        if (!_.isNil(quote)) {
           const date = new Date(quote.time);
           returnMessage += `${quote.username}: "${quote.message}" (${formatTime(date, false)})\n`;
         }
