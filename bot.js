@@ -41,19 +41,19 @@ function handleCommand(cmd, parameters, message, commandName) {
 function evalCommand(parameters, message) {
   if (message.author.id !== constants.MASTER || parameters.length === 0) return Promise.resolve();
   try {
-      const code = parameters.join(" ");
-      let evaled = eval(code);
-      if (typeof evaled !== "string") {
-        evaled = require("util").inspect(evaled);
-      }
-      return Promise.resolve(clean(evaled))
-    } catch(err) {
-      return Promise.resolve(err.name + ': ' + err.message);
+    const code = parameters.join(" ");
+    let evaled = eval(code);
+    if (typeof evaled !== "string") {
+      evaled = require("util").inspect(evaled);
     }
+    return Promise.resolve(clean(evaled))
+  } catch(err) {
+    return Promise.resolve(err.name + ': ' + err.message);
+  }
 }
 
 function clean(text) {
-  if (typeof(text) === "string") {
+  if (typeof text === "string") {
     return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
   } else {
     return text;

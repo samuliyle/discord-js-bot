@@ -1,13 +1,14 @@
 const mysql = require('mysql');
 
 const constants = require('./config/constants');
+const _ = require('lodash');
 
 const connection = mysql.createConnection({
   host: constants.DB_URL,
   user: constants.DB_USERNAME,
   password: constants.DB_PASSWORD,
   database: constants.DB,
-  charset: 'utf8mb4'
+  charset: 'utf8mb4',
 });
 
 connection.connect((err) => {
@@ -47,7 +48,7 @@ function randomName(client) {
         if (i + 1 === result.length) return;
         if (q[0]) {
           if (q[0].message) {
-            const words = q[0].message.split(" ");
+            const words = q[0].message.split(' ');
             const rand = Math.floor(Math.random() * words.length);
             if (words[rand].length >= 31) {
               name = words[rand].substr(0, 31);
@@ -59,15 +60,17 @@ function randomName(client) {
         }
       });
       if (name.length === 0) return;
-      client.guilds.get(constants.BEST_SERVER)
-      .members.get(client.user.id)
-      .setNickname(name)
-      .then((s) => {
-        console.log(`Changed name to ${name}`);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      const guild = client.guilds.get(constants.BEST_SERVER);
+      if (!_.isNil(guild)) {
+        guild.members.get(client.user.id)
+        .setNickname(name)
+        .then(() => {
+          console.log(`Changed name to ${name}`);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
     });
   }, 3600000); // 60 minutes
 }
@@ -76,5 +79,5 @@ module.exports = {
   connection,
   logMessage,
   logCommand,
-  randomName
+  randomName,
 };

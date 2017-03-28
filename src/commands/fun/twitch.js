@@ -1,5 +1,7 @@
+/* eslint-disable no-plusplus,consistent-return */
 const Promise = require('bluebird');
 const https = require('https');
+const _ = require('lodash');
 
 const database = require('../../../database');
 const constants = require('../../../config/constants');
@@ -7,29 +9,29 @@ const constants = require('../../../config/constants');
 const alerts = {};
 
 function modifyAlerts(result) {
-  for (let i = 0; i < result.length; i++) {
-    if (result[i].twitchChannel in alerts) {
-      const channelAlerts = alerts[result[i].twitchChannel].alert;
-      for (let j = 0; j < channelAlerts.length; j++) {
-        if (channelAlerts[j].userId === result[i].userId) {
+  _.forEach(result, (alert) => {
+    if (alert.twitchChannel in alerts) {
+      const channelAlerts = alerts[alert.twitchChannel].alert;
+      _.forEach(channelAlerts, (channelAlert) => {
+        if (channelAlert.userId === alert.userId) {
           return true;
         }
-      }
-      alerts[result[i].twitchChannel].alert.push({ userId: result[i].userId, channelId: result[i].channelId })
+      });
+      alerts[alert.twitchChannel].alert.push({ userId: alert.userId, channelId: alert.channelId });
     } else {
-      alerts[result[i].twitchChannel] = { alert: [{ userId: result[i].userId, channelId: result[i].channelId }], online: true };
+      alerts[alert.twitchChannel] = {
+        alert: [{ userId: alert.userId, channelId: alert.channelId }], online: true };
     }
-  }
+  });
 }
 
 function findAlert(alert) {
   if (alert.twitchChannel in alerts) {
-    for (let i = 0; i < alerts[alert.twitchChannel].alert.length; i++) {
-      const a = alerts[alert.twitchChannel].alert[i];
+    _.forEach(alerts[alert.twitchChannel], (a, i) => {
       if (a.userId === alert.userId && a.channelId === alert.channelId) {
         return i;
       }
-    }
+    });
   }
   return -1;
 }
@@ -68,7 +70,6 @@ function channelExists(channel) {
       resolve(channelResult.status);
     });
     req.on('error', (err) => {
-      console.log(err);
       reject(err);
     });
     req.end();
@@ -90,7 +91,7 @@ function addAlert(parameters, message) {
           }]);
           if (alertExists) return resolve(`You already have a alert for channel ${parameters[0]}.`);
           database.connection.query('INSERT INTO alerts (userId, twitchChannel, channelId) VALUES(?, ?, ?)',
-          [message.author.id, parameters[0], message.channel.id], (err, result) => {
+          [message.author.id, parameters[0], message.channel.id], (err) => {
             if (err) return reject(err);
             resolve('Alert added. :ok_hand:');
           });
@@ -99,7 +100,6 @@ function addAlert(parameters, message) {
         }
       })
       .catch((err) => {
-        console.log(err);
         reject(err);
       });
     });
@@ -108,9 +108,10 @@ function addAlert(parameters, message) {
 
 function removeAlert(parameters, message) {
   if (parameters.length === 0) return;
-  const index = findAlert({ channelId: message.channel.id, twitchChannel: parameters[0], userId: message.author.id });
+  const index = findAlert(
+    { channelId: message.channel.id, twitchChannel: parameters[0], userId: message.author.id });
   return new Promise((resolve, reject) => {
-    if (index === -1) return (resolve(`You dont have an alert to channel ${parameters[0]}.`));
+    if (index === -1) return (resolve(`You don't have an alert to channel ${parameters[0]}.`));
     database.connection.query('DELETE FROM alerts WHERE userId = ? AND twitchChannel = ? AND channelId = ?',
       [message.author.id, parameters[0], message.channel.id], (err) => {
         if (err) return reject(err);
@@ -119,17 +120,18 @@ function removeAlert(parameters, message) {
           delete alerts[parameters[0]];
         }
         resolve('Removed alert.');
-    });
+      });
   });
 }
 
 function listAlerts(parameters, message) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let alertResult = '';
-    for (let key in alerts) {
+    for (const key in alerts) {
       const obj = alerts[key];
       for (let i = 0; i < obj.alert.length; i++) {
-        if (obj.alert[i].userId === message.author.id && obj.alert[i].channelId === message.channel.id) {
+        if (obj.alert[i].userId === message.author.id &&
+          obj.alert[i].channelId === message.channel.id) {
           alertResult += `${key}, `;
           break;
         }
@@ -159,33 +161,37 @@ function checkAlert(channel) {
       });
     });
     req.on('close', () => {
-      const statusResult = JSON.parse(streamStatus);
+      let statusResult;
+      try {
+        statusResult = JSON.parse(streamStatus);
+      } catch (error) {
+        return reject(error);
+      }
       let msg = '';
       if (statusResult.stream) {
         if (alerts[channel].online === false) {
-          let announcements = {};
-          for (let i = 0; i < alerts[channel].alert.length; i++) {
-            const channelId = alerts[channel].alert[i].channelId;
-            const userId = alerts[channel].alert[i].userId;
+          const announcements = {};
+          _.forEach(alerts[channel].alert, (alert) => {
+            const channelId = alert.channelId;
+            const userId = alert.userId;
             if (channelId in announcements) {
-              announcements[channelId].message.push({ userId: userId });
+              announcements[channelId].message.push({ userId });
             } else {
-              announcements[channelId] = { message: [{ userId: userId }] };
+              announcements[channelId] = { message: [{ userId }] };
             }
-          }
+          });
           msg += `**${statusResult.stream.channel.display_name}** has come online! PogChamp `;
           msg += `${statusResult.stream.channel.url} || `;
           msg += `**Game**: ${statusResult.stream.game} || `;
           msg += `**Title**: ${statusResult.stream.channel.status}`;
           alerts[channel].online = true;
-          resolve({ channel: announcements, message: msg});
+          resolve({ channel: announcements, message: msg });
         }
       } else {
         alerts[channel].online = false;
       }
     });
     req.on('error', (err) => {
-      console.log(err);
       reject(err);
     });
     req.end();

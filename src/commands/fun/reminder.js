@@ -1,13 +1,14 @@
 const Promise = require('bluebird');
 const chrono = require('chrono-node');
 const moment = require('moment');
+const _ = require('lodash');
 
 function reminder(message, sender) {
   if (message.length === 0 || message.length === 1) return Promise.resolve('Incorrect format. !remind <minutes> <message>');
   const msg = message.join(' ');
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (!isNaN(message[0])) {
-      const time = parseInt(message[0]);
+      const time = _.parseInt(message[0]);
       if (time > 10080) return resolve('Maximum time is 7 days (10080 minutes)');
       if (time < 1) return resolve('Time must be at least 1 minute.');
       setTimeout(() => {
@@ -34,7 +35,7 @@ function reminder(message, sender) {
       if (minutes < 1) {
         return resolve('Time must be at least 1 minute.')
       }
-    };
+    }
     if (minutes > 10080) return resolve('Maximum time is 7 days (10080 minutes)');
 
     setTimeout(() => {
@@ -47,7 +48,7 @@ function reminder(message, sender) {
 
 module.exports = {
   remind: reminder,
-  reminder: reminder,
+  reminder,
   timer: reminder,
   alarm: reminder,
   alert: reminder

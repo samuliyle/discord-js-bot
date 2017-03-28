@@ -1,5 +1,6 @@
 const Promise = require('bluebird');
 
+const _ = require('lodash');
 const database = require('../../../database');
 const formatTime = require('../helpers/formattime');
 
@@ -18,8 +19,10 @@ function randomQuote(parameters, message) {
       result.forEach((q, i) => {
         if (i + 1 === result.length) return;
         const quote = q[0];
-        const date = new Date(quote.time);
-        returnMessage += `${quote.username}: "${quote.message}" (${formatTime(date, false)})\n`;
+        if (_.isNil(quote)) {
+          const date = new Date(quote.time);
+          returnMessage += `${quote.username}: "${quote.message}" (${formatTime(date, false)})\n`;
+        }
       });
       resolve(returnMessage);
     });
@@ -43,7 +46,6 @@ function searchPhrase(parameters, message) {
 }
 
 function phraseCount(parameters, message) {
-  const channel = message.channel;
   if (parameters.length === 0) return;
   const phrase = parameters.join(' ');
   let finalPhrase = `%${phrase}%`;
@@ -51,7 +53,7 @@ function phraseCount(parameters, message) {
     finalPhrase = `%${phrase.substring(0, phrase.indexOf('>')-1)}%`;
   }
   let query = 'SELECT count(*) FROM messages WHERE message LIKE ? and channelId = ?';
-  let queryParameters = [finalPhrase, message.channel.id];
+  const queryParameters = [finalPhrase, message.channel.id];
   if (parameters.length >= 3) {
     if (parameters[parameters.length - 2] === ">") {
       queryParameters.push(parameters[parameters.length - 1]);
@@ -68,8 +70,8 @@ function phraseCount(parameters, message) {
 
 function findOccurance(parameters, message, commandName) {
   if (parameters.length === 0) return;
-  let order = "ASC";
-  if (commandName === "last") order = "DESC";
+  let order = 'ASC';
+  if (commandName === 'last') order = 'DESC';
   const phrase = parameters.join(' ');
   const finalPhrase = `%${phrase}%`;
   return new Promise((resolve, reject) => {
