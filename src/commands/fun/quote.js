@@ -16,6 +16,9 @@ function randomQuote(parameters, message) {
     database.connection.query(`CALL get_rands(${count}, ${channel.id})`, (err, result) => {
       if (err) return reject(err);
       let returnMessage = '';
+      if (_.isNil(result)) {
+        resolve();
+      }
       result.forEach((q, i) => {
         if (i + 1 === result.length) return;
         const quote = q[0];
@@ -50,7 +53,7 @@ function phraseCount(parameters, message) {
   const phrase = parameters.join(' ');
   let finalPhrase = `%${phrase}%`;
   if (phrase.indexOf('>') !== -1) {
-    finalPhrase = `%${phrase.substring(0, phrase.indexOf('>')-1)}%`;
+    finalPhrase = `%${phrase.substring(0, phrase.indexOf('>') - 1)}%`;
   }
   let query = 'SELECT count(*) FROM messages WHERE message LIKE ? and channelId = ?';
   const queryParameters = [finalPhrase, message.channel.id];
