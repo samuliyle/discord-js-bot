@@ -30,7 +30,7 @@ function commandInfo(parameters, message) {
       database.connection.query('SELECT * from commands where command = ?', parameters[0].toLowerCase(), (err, result) => {
         if (err) return reject(err);
         if (result.length === 0) return (resolve(`No info found on command '${parameters[0]}'`));
-        let cmdInfo = {
+        const cmdInfo = {
           usageCount: 0,
           channelCount: 0,
           exeCount: 0,
@@ -39,14 +39,14 @@ function commandInfo(parameters, message) {
           channelUsers: {},
           executionTimes: {
             avgExecutionTime: 0,
-            minExecutionTime: 0,
+            minExecutionTime: null,
             maxExecutionTime: 0,
             sumExecutionTime: 0,
           },
           firstUsage: null,
           lastUsage: null,
         };
-        for (cmd of result) {
+        for (const cmd of result) {
           cmdInfo.usageCount++;
           const username = cmd.username;
           const userId = cmd.user_id;
@@ -54,14 +54,20 @@ function commandInfo(parameters, message) {
           const time = cmd.time;
           const parameter = cmd.parameters;
           if (exeTime) {
-            if (cmdInfo.executionTimes.maxExecutionTime < exeTime) {
-              cmdInfo.executionTimes.maxExecutionTime = exeTime;
+            if (exeTime > 0) {
+              if (cmdInfo.executionTimes.maxExecutionTime < exeTime) {
+                cmdInfo.executionTimes.maxExecutionTime = exeTime;
+              }
+              if (cmdInfo.executionTimes.minExecutionTime) {
+                if (cmdInfo.executionTimes.minExecutionTime > exeTime) {
+                  cmdInfo.executionTimes.minExecutionTime = exeTime;
+                }
+              } else {
+                  cmdInfo.executionTimes.minExecutionTime = exeTime;
+              }
+              cmdInfo.executionTimes.sumExecutionTime += exeTime;
+              cmdInfo.exeCount++;
             }
-            if (cmdInfo.executionTimes.minExecutionTime > exeTime) {
-              cmdInfo.executionTimes.minExecutionTime = cmd.minExecutionTime;
-            }
-            cmdInfo.executionTimes.sumExecutionTime += exeTime;
-            cmdInfo.exeCount++;
           }
           if (parameter) {
             fixedParameter = parameter.toLowerCase();
@@ -115,7 +121,6 @@ Max execution time: **${cmdInfo.executionTimes.maxExecutionTime}**ms`
 `Command: **${parameters[0]}**
 Usage count: **${cmdInfo.usageCount}**
 Channel usage count: **${cmdInfo.channelCount}**
-Top 3 users: ${topUsage(cmdInfo.allUsers, 3, true) || ''}
 Channel top 3 users: ${topUsage(cmdInfo.channelUsers, 3, true) || ''}
 Top 3 parameters: ${topUsage(cmdInfo.parameters, 3) || ''}
 ${exeTimes || 'Mörkö command: **false**'}
