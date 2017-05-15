@@ -25,7 +25,7 @@ function randomBingImage(searchPhrase) {
       if (imageResult.value.length === 0) return (resolve('Couldnt find any images. :thinking:'));
       const rand = Math.floor(Math.random() * imageResult.value.length);
       const image = imageResult.value[rand];
-      const imageUrl = image.thumbnailUrl ? image.thumbnailUrl : '';
+      const imageUrl = image.contentUrl ? image.contentUrl : '';
       const name = image.name ? image.name : '';
       resolve(`${imageUrl} ${name}`);
     });

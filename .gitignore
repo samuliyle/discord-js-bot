@@ -47,3 +47,5 @@ jspm_packages
 .node_repl_history
 
 bot0.js
+.idea
+.vscode
