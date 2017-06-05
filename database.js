@@ -2,6 +2,7 @@ const mysql = require('mysql');
 
 const constants = require('./config/constants');
 const _ = require('lodash');
+const emoji = require('node-emoji');
 
 const connection = mysql.createConnection({
   host: constants.DB_URL,
@@ -50,8 +51,8 @@ function randomName(client) {
           if (q[0].message) {
             const words = q[0].message.split(' ');
             const rand = Math.floor(Math.random() * words.length);
-            if (words[rand].length >= 31) {
-              name = words[rand].substr(0, 31);
+            if (words[rand].length >= 25) {
+              name = words[rand].substr(0, 25);
             } else {
               name = words[rand];
             }
@@ -60,12 +61,21 @@ function randomName(client) {
         }
       });
       if (name.length === 0) return;
+      const firstEmoji = emoji.random();
+      const secondEmoji = emoji.random();
+      let emojiName = `${firstEmoji.emoji} ${name} ${secondEmoji.emoji}`;
+      if (emojiName.length > 32) {
+        emojiName = `${firstEmoji.emoji} ${name}`;
+        if (emojiName.length > 32) {
+          emojiName = name;
+        }
+      }
       const guild = client.guilds.get(constants.BEST_SERVER);
       if (!_.isNil(guild)) {
         guild.members.get(client.user.id)
-        .setNickname(name)
+        .setNickname(emojiName)
         .then(() => {
-          console.log(`Changed name to ${name}`);
+          console.log('New name: ' + emojiName);
         })
         .catch((error) => {
           console.log(error);
