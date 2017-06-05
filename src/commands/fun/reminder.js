@@ -12,7 +12,7 @@ function reminder(message, sender) {
       if (time > 10080) return resolve('Maximum time is 7 days (10080 minutes)');
       if (time < 1) return resolve('Time must be at least 1 minute.');
       setTimeout(() => {
-        sender.reply(`:fire: REMEMBER: ${message.slice(1)}! :fire:`);
+        sender.reply(`:fire: REMEMBER: ${msg.slice(1)}! :fire:`);
       }, time * 60000);
       const minuteMsg = time === 1 ? 'minute' : 'minutes';
       return resolve(`Reminding you in ${time} ${minuteMsg}.`);
