@@ -9,10 +9,10 @@ function reminder(message, sender) {
   return new Promise((resolve) => {
     if (!isNaN(message[0])) {
       const time = _.parseInt(message[0]);
-      if (time > 10080) return resolve('Maximum time is 7 days (10080 minutes)');
+      if (time > 10080 || isNaN(time)) return resolve('Maximum time is 7 days (10080 minutes)');
       if (time < 1) return resolve('Time must be at least 1 minute.');
       setTimeout(() => {
-        sender.reply(`:fire: REMEMBER: ${msg.slice(1)}! :fire:`);
+        sender.reply(`:fire: REMEMBER: ${msg.split(' ').slice(1).join(' ')}! :fire:`);
       }, time * 60000);
       const minuteMsg = time === 1 ? 'minute' : 'minutes';
       return resolve(`Reminding you in ${time} ${minuteMsg}.`);
