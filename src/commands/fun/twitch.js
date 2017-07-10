@@ -27,11 +27,12 @@ function modifyAlerts(result) {
 
 function findAlert(alert) {
   if (alert.twitchChannel in alerts) {
-    _.forEach(alerts[alert.twitchChannel], (a, i) => {
+    for (let i = 0; i < alerts[alert.twitchChannel].alert.length; i++) {
+      const a = alerts[alert.twitchChannel].alert[i];
       if (a.userId === alert.userId && a.channelId === alert.channelId) {
         return i;
       }
-    });
+    }
   }
   return -1;
 }
