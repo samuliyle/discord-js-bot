@@ -22,7 +22,7 @@ function randomBingImage(searchPhrase) {
     });
     req.on('close', () => {
       const imageResult = JSON.parse(images);
-      if (imageResult.value.length === 0) return (resolve('Couldnt find any images. :thinking:'));
+      if (imageresult != null && imageResult.value.length === 0) return (resolve('Couldnt find any images. :thinking:'));
       const rand = Math.floor(Math.random() * imageResult.value.length);
       const image = imageResult.value[rand];
       const imageUrl = image.contentUrl ? image.contentUrl : '';
@@ -36,6 +36,6 @@ function randomBingImage(searchPhrase) {
   });
 }
 
-module.exports = {
-  bing: randomBingImage,
-};
+//module.exports = {
+//  bing: randomBingImage,
+//};
