@@ -45,6 +45,10 @@ function userInfo(parameters, message) {
   return Promise.resolve(userInfoText);
 }
 
+function ville() {
+  return Promise.resolve('http://i.imgur.com/Yc0syYv.png');
+}
+
 function commands() {
   return Promise.resolve('Commands: https://github.com/wraithyz/discord-js-bot');
 }
@@ -61,4 +65,8 @@ module.exports = {
   bot: botInfo,
   commands,
   help: commands,
+  ville: ville,
+  kickville: ville,
+  banville: ville,
+  whakey: ville
 };

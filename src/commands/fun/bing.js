@@ -4,7 +4,7 @@ const https = require('https');
 const constants = require('../../../config/constants');
 
 function randomBingImage(searchPhrase) {
-  return Promise.resolve("Try !google");
+  return Promise.resolve(":rage: :point_right: !google");
   // if (searchPhrase.length === 0) return;
   // const options = {
   //   host: 'api.cognitive.microsoft.com',
