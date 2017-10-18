@@ -48,7 +48,7 @@ function userInfo(parameters, message) {
 }
 
 function ville() {
-  const searchPhrase = "heart";
+  const searchPhrase = "heart%20icon";
    if (searchPhrase.length === 0) 
     return;
   const offset = Math.ceil(Math.random() * 15);
