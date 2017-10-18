@@ -9,7 +9,7 @@ function randomGoogleImage(searchPhrase) {
   const offset = Math.ceil(Math.random() * 15);
   const options = {
     host: 'www.googleapis.com',
-    path: `/customsearch/v1?q=${searchPhrase}&searchType=image&cx=${constants.GOOGLE_CX}&num=1&start=${offset}&imgsize=medium&key=${constants.GOOGLE_ID}`,
+    path: `/customsearch/v1?q=${searchPhrase.join('%20')}&searchType=image&cx=${constants.GOOGLE_CX}&num=1&start=${offset}&imgsize=medium&key=${constants.GOOGLE_ID}`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

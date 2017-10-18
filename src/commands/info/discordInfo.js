@@ -1,5 +1,7 @@
 const Promise = require('bluebird');
+const https = require('https');
 
+const constants = require('../../../config/constants');
 const formatTime = require('../helpers/formattime');
 
 function channelInfo(parameters, message) {
@@ -46,7 +48,43 @@ function userInfo(parameters, message) {
 }
 
 function ville() {
-  return Promise.resolve('http://i.imgur.com/Yc0syYv.png');
+  const searchPhrase = "heart";
+   if (searchPhrase.length === 0) 
+    return;
+  const offset = Math.ceil(Math.random() * 15);
+  const options = {
+    host: 'www.googleapis.com',
+    path: `/customsearch/v1?q=${searchPhrase}&searchType=image&cx=${constants.GOOGLE_CX}&num=1&start=${offset}&imgsize=medium&key=${constants.GOOGLE_ID}`,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  return new Promise((resolve, reject) => {
+    let images = '';
+    const req = https.request(options, (res) => {
+      res.on('data', (data) => {
+        images += data;
+      });
+    });
+    req.on('close', () => {
+      try {
+        const imageResult = JSON.parse(images);
+        if (imageResult == null || imageResult.items.length === 0 || !imageResult.items[0].hasOwnProperty('link') || imageResult.items[0].link == null || imageResult.items[0].link === "") {
+          return (resolve('https://i.imgur.com/7IP6cgz.png'));
+        }
+        const image = imageResult.items[0];
+        resolve(`${image.link}`);
+      } catch (error) {
+        return (resolve('https://i.imgur.com/7IP6cgz.png'));
+      }
+    });
+    req.on('error', (err) => {
+      reject(err);
+    });
+    req.end();
+  });
+  //return Promise.resolve('http://i.imgur.com/Yc0syYv.png');
 }
 
 function commands() {
@@ -65,8 +103,5 @@ module.exports = {
   bot: botInfo,
   commands,
   help: commands,
-  ville: ville,
-  kickville: ville,
-  banville: ville,
-  whakey: ville
+  ville: ville
 };
