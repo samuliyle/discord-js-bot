@@ -1,5 +1,6 @@
 const Promise = require('bluebird');
 const https = require('https');
+const moment = require('moment-timezone');
 
 const constants = require('../../../config/constants');
 const formatTime = require('../helpers/formattime');
@@ -55,6 +56,18 @@ function ville2() {
   return Promise.resolve('http://i.imgur.com/Yc0syYv.png');
 }
 
+function nz() {
+  return Promise.resolve(`:flag_nz: ${moment().tz('Pacific/Auckland').format('YYYY-MM-DD HH:mm')}`);
+}
+
+function fi() {
+  return Promise.resolve(`:flag_fi: ${moment().tz('Europe/Helsinki').format('YYYY-MM-DD HH:mm')}`);
+}
+
+function time() {
+  return Promise.resolve(`:flag_fi: ${moment().tz('Europe/Helsinki').format('YYYY-MM-DD HH:mm')}\n:flag_nz: ${moment().tz('Pacific/Auckland').format('YYYY-MM-DD HH:mm')}`);
+}
+
 function commands() {
   return Promise.resolve('Commands: https://github.com/wraithyz/discord-js-bot');
 }
@@ -72,5 +85,8 @@ module.exports = {
   commands,
   help: commands,
   ville: ville,
-  ville2: ville2
+  ville2: ville2,
+  nz: nz,
+  fi: fi,
+  time: time
 };
