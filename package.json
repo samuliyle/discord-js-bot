@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node bot.js",
     "build": "eslint src/**",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/test"
   },
   "author": "",
   "license": "ISC",

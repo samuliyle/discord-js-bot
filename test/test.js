@@ -4,7 +4,7 @@ const mysql = require('mysql');
 const constants = require('../config/constants');
 
 const eightBall = require('../src/commands/fun/8ball');
-const bing = require('../src/commands/fun/bing');
+const google = require('../src/commands/fun/google');
 const cat = require('../src/commands/fun/cat');
 const chat = require('../src/commands/fun/chat');
 const imgur = require('../src/commands/fun/imgur');
@@ -42,13 +42,13 @@ describe('eightBall', function() {
   })
 });
 
-describe('randomBingImage', function() {
+describe('randomGoogleImage', function() {
   it('should return nothing', function() {
-    var bingReturn = bing['bing']([]);
-    expect(bingReturn).to.not.exist;
+    var googleReturn = google['google']([]);
+    expect(googleReturn).to.not.exist;
   });
   it('should return a image link', function() {
-    return bing['bing'](['test'])
+    return google['google'](['test'])
       .then(function (data) {
         expect(data).to.be.a('string');
       });
