@@ -1,10 +1,7 @@
 const Promise = require('bluebird');
-const https = require('https');
 
-const constants = require('../../../config/constants');
-
-function randomBingImage(searchPhrase) {
-  return Promise.resolve(":rage: :point_right: !google");
+function randomBingImage() {
+  return Promise.resolve(':rage: :point_right: !google');
   // if (searchPhrase.length === 0) return;
   // const options = {
   //   host: 'api.cognitive.microsoft.com',
@@ -23,7 +20,9 @@ function randomBingImage(searchPhrase) {
   //   });
   //   req.on('close', () => {
   //     const imageResult = JSON.parse(images);
-  //     if (imageresult != null && imageResult.value.length === 0) return (resolve('Couldnt find any images. :thinking:'));
+  //     if (imageresult != null && imageResult.value.length === 0)  {
+  // return (resolve('Couldnt find any images. :thinking:'));
+  // }
   //     const rand = Math.floor(Math.random() * imageResult.value.length);
   //     const image = imageResult.value[rand];
   //     const imageUrl = image.contentUrl ? image.contentUrl : '';
@@ -34,7 +33,7 @@ function randomBingImage(searchPhrase) {
   //     reject(err);
   //   });
   //   req.end();
-  //});
+  // });
 }
 
 module.exports = {

@@ -4,6 +4,13 @@
         "node": true
     },
   "rules": {
-     "linebreak-style": 0
+     "linebreak-style": 0,
+     "no-eval": ["off", {"allowIndirect": true}],
+     "comma-dangle": "off",
+     "no-console": "off",
+     "indent": "off",
+     "consistent-return": "off",
+     "new-cap": "off",
+     "no-plusplus": "off"
     }
 }

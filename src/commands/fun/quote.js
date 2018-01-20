@@ -2,13 +2,13 @@ const Promise = require('bluebird');
 
 const _ = require('lodash');
 const database = require('../../../database');
-const formatTime = require('../helpers/formattime');
+const utility = require('../../utility/utility');
 
 function randomQuote(parameters, message) {
   let count = 1;
-  const channel = message.channel;
+  const { channel } = message;
   if (parameters.length !== 0) {
-    if (!isNaN(parameters[0])) {
+    if (!_.isNaN(parameters[0])) {
       count = parameters[0] < 10 ? parameters[0] : 10;
     }
   }
@@ -24,7 +24,7 @@ function randomQuote(parameters, message) {
         const quote = q[0];
         if (!_.isNil(quote)) {
           const date = new Date(quote.time);
-          returnMessage += `${quote.username}: "${quote.message}" (${formatTime(date, false)})\n`;
+          returnMessage += `${quote.username}: "${quote.message}" (${utility.formatTime(date, false)})\n`;
         }
       });
       resolve(returnMessage);
@@ -43,7 +43,7 @@ function searchPhrase(parameters, message) {
       const rand = Math.floor(Math.random() * result.length);
       const quote = result[rand];
       const date = new Date(quote.time);
-      resolve(`${quote.username}: "${quote.message}" (${formatTime(date, false)})\n`);
+      resolve(`${quote.username}: "${quote.message}" (${utility.formatTime(date, false)})\n`);
     });
   });
 }
@@ -58,7 +58,7 @@ function phraseCount(parameters, message) {
   let query = 'SELECT count(*) FROM messages WHERE message LIKE ? and channelId = ?';
   const queryParameters = [finalPhrase, message.channel.id];
   if (parameters.length >= 3) {
-    if (parameters[parameters.length - 2] === ">") {
+    if (parameters[parameters.length - 2] === '>') {
       queryParameters.push(parameters[parameters.length - 1]);
       query += ' and username = ?';
     }
@@ -82,7 +82,7 @@ function findOccurance(parameters, message, commandName) {
       if (err) return reject(err);
       if (result.length === 0) return (resolve(`No messages found containing phrase "${phrase}" in this channel.`));
       const date = new Date(result[0].time);
-      resolve(`${result[0].username}: "${result[0].message}" (${formatTime(date, false)})\n`);
+      resolve(`${result[0].username}: "${result[0].message}" (${utility.formatTime(date, false)})\n`);
     });
   });
 }

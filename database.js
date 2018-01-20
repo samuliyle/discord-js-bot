@@ -31,12 +31,14 @@ function logMessage(msg) {
 function logCommand(command, parameters, msg, executionTime, ownCommand) {
   let parameter = null;
   if (parameters.length !== 0) {
-    parameter = parameters.join(" ");
+    parameter = parameters.join(' ');
   }
-  connection.query('INSERT INTO commands (command, parameters, username, user_id, channel_id, guild_id, execution_time, time, own_command) values(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+  connection.query(
+    'INSERT INTO commands (command, parameters, username, user_id, channel_id, guild_id, execution_time, time, own_command) values(?, ?, ?, ?, ?, ?, ?, ?, ?)',
   [command, parameter, msg.author.username, msg.author.id, msg.channel.id, msg.guild.id, executionTime, new Date(), ownCommand], (err) => {
     if (err) throw err;
-  });
+  }
+);
 }
 
 function randomName(client) {
@@ -57,7 +59,6 @@ function randomName(client) {
               name = words[rand];
             }
           }
-          return;
         }
       });
       if (name.length === 0) return;

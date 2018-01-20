@@ -1,12 +1,14 @@
 const Promise = require('bluebird');
 const https = require('https');
+const _ = require('lodash');
 
 const constants = require('../../../config/constants');
 
 function randomGoogleImage(searchPhrase) {
-  if (searchPhrase.length === 0) 
+  if (searchPhrase.length === 0) {
     return;
-  const offset = Math.ceil(Math.random() * 15);
+  }
+  const offset = _.random(15);
   const options = {
     host: 'www.googleapis.com',
     path: `/customsearch/v1?q=${searchPhrase.join('%20')}&searchType=image&cx=${constants.GOOGLE_CX}&num=1&start=${offset}&imgsize=medium&key=${constants.GOOGLE_ID}`,
@@ -25,7 +27,7 @@ function randomGoogleImage(searchPhrase) {
     req.on('close', () => {
       try {
         const imageResult = JSON.parse(images);
-        if (imageResult == null || imageResult.items.length === 0 || !imageResult.items[0].hasOwnProperty('link') || imageResult.items[0].link == null || imageResult.items[0].link === "") {
+        if (imageResult == null || imageResult.items.length === 0 || !_.has(imageResult.items[0], 'link') || imageResult.items[0].link == null || imageResult.items[0].link === '') {
           return (resolve('Couldnt find any images. :thinking:'));
         }
         const image = imageResult.items[0];

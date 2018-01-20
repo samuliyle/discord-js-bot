@@ -1,31 +1,54 @@
 const Promise = require('bluebird');
 const database = require('../../../database');
+const _ = require('lodash');
 
-const formatTime = require('../helpers/formattime');
+const utility = require('../../utility/utility');
 
 function hasOwnPropertyCaseInsensitive(obj, property) {
-  var props = [];
-  for (var i in obj) if (obj.hasOwnProperty(i)) props.push(i);
-  var prop;
-  while (prop = props.pop()) if (prop.toLowerCase() === property.toLowerCase()) return true;
+  const props = [];
+  _.forOwn(obj, (value, key) => {
+    props.push(key);
+  });
+  let prop;
+  while (prop = props.pop()) {
+    if (prop.toLowerCase() === property.toLowerCase()) {
+      return true;
+    }
+  }
   return false;
 }
 
-function commandsInfo(message) {
-  return;
-  return new Promise((resolve, reject) => {
-    database.connection.query('SELECT * from commands where guild_id = ?', message.guild.id, (err, result) => {
-      if (err) return reject(err);
-      if (result.length === 0) return (resolve(`No commands used in this channel :thinking:`));
-      resolve(result.length);
+function topUsage(users, count, topUser) {
+  const sortable = [];
+  let topUsers = '';
+  if (topUser) {
+    _.forOwn(users, (value, key) => {
+      sortable.push([users[key].username, users[key].usageCount]);
     });
+  } else {
+    _.forOwn(users, (value, key) => {
+      sortable.push([key, users[key].usageCount]);
+    });
+  }
+  sortable.sort((a, b) => {
+      return b[1] - a[1];
   });
+  let slicedSortable = sortable;
+  if (sortable.length > count) {
+    slicedSortable = sortable.slice(0, count);
+  }
+  for (let i = 0; i < slicedSortable.length; i++) {
+    topUsers += `**${i + 1}. ${slicedSortable[i][0]}** (${slicedSortable[i][1]})`;
+    if (i + 1 !== slicedSortable.length) {
+      topUsers += ' ';
+    }
+  }
+  return topUsers;
 }
 
+
 function commandInfo(parameters, message) {
-  if (parameters.length === 0) {
-    return commandsInfo(message);
-  } else {
+  if (parameters.length !== 0) {
     return new Promise((resolve, reject) => {
       database.connection.query('SELECT * from commands where command = ?', parameters[0].toLowerCase(), (err, result) => {
         if (err) return reject(err);
@@ -48,10 +71,9 @@ function commandInfo(parameters, message) {
         };
         for (const cmd of result) {
           cmdInfo.usageCount++;
-          const username = cmd.username;
+          const { username, time } = cmd;
           const userId = cmd.user_id;
           const exeTime = cmd.execution_time;
-          const time = cmd.time;
           const parameter = cmd.parameters;
           if (exeTime) {
             if (exeTime > 0) {
@@ -70,7 +92,7 @@ function commandInfo(parameters, message) {
             }
           }
           if (parameter) {
-            fixedParameter = parameter.toLowerCase();
+            const fixedParameter = parameter.toLowerCase();
             if (hasOwnPropertyCaseInsensitive(cmdInfo.parameters, fixedParameter)) {
               cmdInfo.parameters[fixedParameter].usageCount++;
             } else {
@@ -85,7 +107,7 @@ function commandInfo(parameters, message) {
               cmdInfo.allUsers[userId].username = username;
             } else {
               cmdInfo.channelUsers[userId] = {
-                username: username,
+                username,
                 usageCount: 1
               };
             }
@@ -96,7 +118,7 @@ function commandInfo(parameters, message) {
             cmdInfo.allUsers[userId].username = username;
           } else {
             cmdInfo.allUsers[userId] = {
-              username: username,
+              username,
               usageCount: 1
             };
           }
@@ -115,50 +137,21 @@ function commandInfo(parameters, message) {
           exeTimes =
 `Avg execution time: **${cmdInfo.executionTimes.avgExecutionTime}**ms
 Min execution time: **${cmdInfo.executionTimes.minExecutionTime}**ms
-Max execution time: **${cmdInfo.executionTimes.maxExecutionTime}**ms`
+Max execution time: **${cmdInfo.executionTimes.maxExecutionTime}**ms`;
         }
-        resolve(
-`Command: **${parameters[0]}**
+        resolve(`Command: **${parameters[0]}**
 Usage count: **${cmdInfo.usageCount}**
 Channel usage count: **${cmdInfo.channelCount}**
 Channel top 3 users: ${topUsage(cmdInfo.channelUsers, 3, true) || ''}
 Top 3 parameters: ${topUsage(cmdInfo.parameters, 3) || ''}
 ${exeTimes || 'Mörkö command: **false**'}
-First usage: **${formatTime(cmdInfo.firstUsage, true)}**
-Last usage: **${formatTime(cmdInfo.lastUsage, true)}**`
-        );
+First usage: **${utility.formatTime(cmdInfo.firstUsage, true)}**
+Last usage: **${utility.formatTime(cmdInfo.lastUsage, true)}**`);
       });
     });
   }
 }
 
-function topUsage(users, count, topUser) {
-  let sortable = [];
-  let topUsers = "";
-  if (topUser) {
-    for (const user in users) {
-      sortable.push([users[user].username, users[user].usageCount])
-    }
-  } else {
-    for (const user in users) {
-      sortable.push([user, users[user].usageCount])
-    }
-  }
-  sortable.sort(function(a, b) {
-      return b[1] - a[1];
-  });
-  let slicedSortable = sortable;
-  if (sortable.length > count) {
-    slicedSortable = sortable.slice(0, count);
-  }
-  for (let i = 0; i < slicedSortable.length; i++) {
-    topUsers += `**${i + 1}. ${slicedSortable[i][0]}** (${slicedSortable[i][1]})`;
-    if (i + 1 !== slicedSortable.length) {
-      topUsers += ' ';
-    }
-  }
-  return topUsers;
-}
 
 module.exports = {
   command: commandInfo,

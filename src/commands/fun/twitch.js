@@ -19,7 +19,7 @@ function modifyAlerts(result) {
       });
       alerts[alert.twitchChannel].alert.push({ userId: alert.userId, channelId: alert.channelId });
     } else {
-      alerts[alert.twitchChannel] = {
+      alerts[alert.twitchChannel] = { 
         alert: [{ userId: alert.userId, channelId: alert.channelId }], online: true };
     }
   });
@@ -91,11 +91,13 @@ function addAlert(parameters, message) {
             channelId: message.channel.id,
           }]);
           if (alertExists) return resolve(`You already have a alert for channel ${parameters[0]}.`);
-          database.connection.query('INSERT INTO alerts (userId, twitchChannel, channelId) VALUES(?, ?, ?)',
+          database.connection.query(
+            'INSERT INTO alerts (userId, twitchChannel, channelId) VALUES(?, ?, ?)',
           [message.author.id, parameters[0], message.channel.id], (err) => {
             if (err) return reject(err);
             resolve('Alert added. :ok_hand:');
-          });
+          }
+        );
         } else {
           return resolve(`Cant add channel ${parameters[0]}.`);
         }
@@ -113,7 +115,8 @@ function removeAlert(parameters, message) {
     { channelId: message.channel.id, twitchChannel: parameters[0], userId: message.author.id });
   return new Promise((resolve, reject) => {
     if (index === -1) return (resolve(`You don't have an alert to channel ${parameters[0]}.`));
-    database.connection.query('DELETE FROM alerts WHERE userId = ? AND twitchChannel = ? AND channelId = ?',
+    database.connection.query(
+      'DELETE FROM alerts WHERE userId = ? AND twitchChannel = ? AND channelId = ?',
       [message.author.id, parameters[0], message.channel.id], (err) => {
         if (err) return reject(err);
         alerts[parameters[0]].alert.splice(index, 1);
@@ -121,7 +124,8 @@ function removeAlert(parameters, message) {
           delete alerts[parameters[0]];
         }
         resolve('Removed alert.');
-      });
+      }
+    );
   });
 }
 
@@ -173,8 +177,7 @@ function checkAlert(channel) {
         if (alerts[channel].online === false) {
           const announcements = {};
           _.forEach(alerts[channel].alert, (alert) => {
-            const channelId = alert.channelId;
-            const userId = alert.userId;
+            const { channelId, userId } = alert;
             if (channelId in announcements) {
               announcements[channelId].message.push({ userId });
             } else {
