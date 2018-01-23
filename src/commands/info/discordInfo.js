@@ -1,25 +1,46 @@
 const Promise = require('bluebird');
 const moment = require('moment-timezone');
+const Discord = require('discord.js');
+const _ = require('lodash');
 
 const utility = require('../../utility/utility');
 
 function channelInfo(parameters, message) {
-  return Promise.resolve(`**Name**: ${message.channel.name}\n**Id**: ${message.channel.id}\n**Creation date**: ${utility.formatTime(message.channel.createdAt, true)}`);
+  const embed = new Discord.RichEmbed();
+  embed.addField('Name', message.channel.name);
+  embed.addField('Id', message.channel.id);
+  embed.addField('Creation date', utility.formatTime(message.channel.createdAt, true));
+  return Promise.resolve(embed);
 }
 
 function guildInfo(parameters, message) {
-  const { guild } = message;
-  const guildInfoText = `**Name**: ${guild.name}\n**Id**: ${guild.id}\n**Creation date**: ${utility.formatTime(guild.createdAt, true)}\n**Region**: ${guild.region}\n**Member count**: ${guild.memberCount}`;
-  return Promise.resolve(guildInfoText);
+  const {guild} = message;
+  const embed = new Discord.RichEmbed();
+  embed.addField('Name', guild.name);
+  embed.addField('Id', guild.id);
+  embed.addField('Creation date', utility.formatTime(guild.createdAt, true));
+  embed.addField('Region', guild.region);
+  embed.addField('Member count', guild.memberCount);
+  console.log(guild.iconURL);
+  if (!_.isNil(guild.iconURL)) {
+    embed.setThumbnail(guild.iconURL);
+  }
+  return Promise.resolve(embed);
 }
 
 function userInfo(parameters, message) {
-  let { author } = message;
+  let {author, member} = message;
   let userInfoText = '';
   if (parameters.length !== 0) {
-    author = message.guild.members.find('nickname', parameters[0]);
+    author = message
+      .guild
+      .members
+      .find('nickname', parameters[0]);
     if (author === null) {
-      author = message.guild.members.find('username', parameters[0]);
+      author = message
+        .guild
+        .members
+        .find('username', parameters[0]);
       if (author === null) {
         let id = parameters[0];
         if (parameters[0].startsWith('<@!')) {
@@ -27,22 +48,39 @@ function userInfo(parameters, message) {
         } else if (parameters[0].startsWith('<@')) {
           id = parameters[0].substring(2, parameters[0].length - 1);
         }
-        author = message.guild.members.get(id);
+        author = message
+          .guild
+          .members
+          .get(id);
       }
     }
   }
   if (author) {
-    if (parameters.length !== 0) {
-      userInfoText = `**Username**: ${author.user.username}\n**Nickname**: ${author.nickname}\n**Id**: ${author.id}\n**Join date:**: ${formatTime(author.joinedAt, true)}\n**Creation date**: ${formatTime(author.user.createdAt, true)}`;
+    let userName = '';
+    const embed = new Discord.RichEmbed();
+    if (_.size(parameters) !== 0) {
+      userName = `${author.user.username} (${author.nickname})`;
+      embed.addField('Id', author.id);
+      embed.addField('Join date', utility.formatTime(author.joinedAt, true));
+      embed.addField('Creation date', utility.formatTime(author.user.createdAt, true));
     } else {
-      userInfoText = `**Name**: ${author.username}\n**Id**: ${author.id}\n**Creation date**: ${utility.formatTime(author.createdAt, true)}`;
+      userName = author.username;
+      embed.addField('Id', author.id);
+      embed.addField('Creation date', utility.formatTime(author.createdAt, true));
     }
     if (author.avatarURL || author.user.avatarURL) {
-      userInfoText += `\n**Avatar**: ${author.avatarURL || author.user.avatarURL}`;
+      embed.setAuthor(userName, author.avatarURL || author.user.avatarURL);
+      embed.setThumbnail(author.avatarURL || author.user.avatarURL);
+    } else {
+      embed.setAuthor(userName);
     }
-  } else {
-    userInfoText = `Could not find user '${parameters[0]}' in this channel. :thinking: Might not be cached, try using a mention.`;
+
+    if (!_.isNil(member) && !_.isNil(member.colorRole) && !_.isNil(member.colorRole.hexColor)) {
+      embed.setColor(member.colorRole.hexColor);
+    }
+    return Promise.resolve(embed);
   }
+  userInfoText = `Could not find user '${parameters[0]}' in this channel. :thinking: Might not be cached, try using a mention.`;
   return Promise.resolve(userInfoText);
 }
 
@@ -82,9 +120,9 @@ module.exports = {
   bot: botInfo,
   commands,
   help: commands,
-  ville: ville,
-  ville2: ville2,
-  nz: nz,
-  fi: fi,
-  time: time
+  ville,
+  ville2,
+  nz,
+  fi,
+  time
 };

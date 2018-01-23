@@ -1,6 +1,5 @@
 const Promise = require('bluebird');
 const Logger = require('basic-logger');
-const _ = require('lodash');
 
 const loggerConfig = {
   showTimestamp: true,

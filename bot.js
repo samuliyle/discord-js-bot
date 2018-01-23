@@ -22,7 +22,11 @@ function handleCommand(cmd, parameters, message, commandName) {
     cmdReturn.then((res) => {
       const executionTime = new Date().getTime() - startTime;
       logger.logMessage(`Execution time: ${executionTime}`, 'info');
-      if (typeof res === 'object') {
+      if (typeof res === 'object' && res.constructor.name === 'RichEmbed') {
+        message
+          .channel
+          .send(res);
+      } else if (typeof res === 'object') {
         message
           .channel
           .sendCode('markdown', res.message);
@@ -41,7 +45,7 @@ function handleCommand(cmd, parameters, message, commandName) {
 function clean(text) {
   if (typeof text === 'string') {
     return text
-      /* eslint prefer-template: "off" */
+    /* eslint prefer-template: "off" */
       .replace(/`/g, '`' + String.fromCharCode(8203))
       .replace(/@/g, `@ + ${String.fromCharCode(8203)}`);
   }
