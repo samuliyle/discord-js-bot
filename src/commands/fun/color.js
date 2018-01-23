@@ -27,7 +27,10 @@ function randomColor(parameters, message) {
                     message
                         .member
                         .addRole(r)
-                        .then(() => Promise.resolve());
+                        .then(() => {
+                            message.channel.send(`Set color to http://garden.offbeatwit.ch/color/${colorHex.replace('#', '')}`);
+                            return Promise.resolve();
+                        });
                 })
                 .catch((e) => {
                     Promise.reject(e);
@@ -39,7 +42,10 @@ function randomColor(parameters, message) {
                 .edit({
                     color: colorHex
                 })
-                .then(() => Promise.resolve())
+                .then(() => {
+                    message.channel.send(`Set color to http://garden.offbeatwit.ch/color/${colorHex.replace('#', '')}`);
+                    return Promise.resolve();
+                })
                 .catch((e) => {
                     Promise.reject(e);
                 });
