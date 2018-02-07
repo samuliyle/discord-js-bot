@@ -21,14 +21,16 @@ function checkAlerts(cmd, client) {
             const channels = res.channel;
             for (const id in channels) {
               let msg = '';
+              const { message } = res;
               const obj = channels[id];
               for (let i = 0; i < obj.message.length; i++) {
                 msg += `<@${obj.message[i].userId}> `;
               }
-              msg += res.message;
+              msg += `${res.channelName} has come online!`;
               const channel = client.channels.get(id);
               if (channel) {
                 channel.sendMessage(msg);
+                channel.send({ embed: message });
               }
             }
           }

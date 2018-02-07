@@ -21,9 +21,8 @@ function guildInfo(parameters, message) {
   embed.addField('Creation date', utility.formatTime(guild.createdAt, true));
   embed.addField('Region', guild.region);
   embed.addField('Member count', guild.memberCount);
-  console.log(guild.iconURL);
   if (!_.isNil(guild.iconURL)) {
-    embed.setThumbnail(guild.iconURL);
+    embed.setImage(guild.iconURL);
   }
   return Promise.resolve(embed);
 }
@@ -59,18 +58,18 @@ function userInfo(parameters, message) {
     let userName = '';
     const embed = new Discord.RichEmbed();
     if (_.size(parameters) !== 0) {
-      userName = `${author.user.username} (${author.nickname})`;
+      userName = `${author.user.username}#${author.user.discriminator} (${author.nickname})`;
       embed.addField('Id', author.id);
       embed.addField('Join date', utility.formatTime(author.joinedAt, true));
       embed.addField('Creation date', utility.formatTime(author.user.createdAt, true));
     } else {
-      userName = author.username;
+      userName = `${author.username}#${author.discriminator}`;
       embed.addField('Id', author.id);
       embed.addField('Creation date', utility.formatTime(author.createdAt, true));
     }
     if (author.avatarURL || author.user.avatarURL) {
       embed.setAuthor(userName, author.avatarURL || author.user.avatarURL);
-      embed.setThumbnail(author.avatarURL || author.user.avatarURL);
+      embed.setImage(author.avatarURL || author.user.avatarURL);
     } else {
       embed.setAuthor(userName);
     }

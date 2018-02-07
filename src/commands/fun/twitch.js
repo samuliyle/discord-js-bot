@@ -2,6 +2,7 @@
 const Promise = require('bluebird');
 const https = require('https');
 const _ = require('lodash');
+const Discord = require('discord.js');
 
 const database = require('../../../database');
 const constants = require('../../../config/constants');
@@ -172,7 +173,6 @@ function checkAlert(channel) {
       } catch (error) {
         return reject(error);
       }
-      let msg = '';
       if (statusResult.stream) {
         if (alerts[channel].online === false) {
           const announcements = {};
@@ -184,12 +184,23 @@ function checkAlert(channel) {
               announcements[channelId] = { message: [{ userId }] };
             }
           });
-          msg += `**${statusResult.stream.channel.display_name}** has come online! PogChamp `;
-          msg += `${statusResult.stream.channel.url} || `;
-          msg += `**Game**: ${statusResult.stream.game} || `;
-          msg += `**Title**: ${statusResult.stream.channel.status}`;
+          const embed = new Discord.RichEmbed();
+          const { stream } = statusResult;
+          embed.setAuthor(stream.channel.display_name, stream.channel.logo);
+          embed.addField('Title', stream.channel.status);
+          embed.addField('Game', stream.game);
+          embed.addField('Viewers', stream.viewers);
+          embed.setURL(stream.channel.url);
+          embed.addField('Url', stream.channel.url);
+          const { preview } = stream;
+          if (!_.isNil(preview) && !_.isNil(preview.large)) {
+            embed.setThumbnail(preview.large);
+          }
+          if (!_.isNil(stream.profile_banner_background_color)) {
+            embed.setColor(stream.profile_banner_background_color);
+          }
           alerts[channel].online = true;
-          resolve({ channel: announcements, message: msg });
+          resolve({ channel: announcements, message: embed, channelName: stream.channel.display_name });
         }
       } else {
         alerts[channel].online = false;
