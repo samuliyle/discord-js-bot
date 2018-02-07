@@ -33,7 +33,7 @@ function randomGoogleImage(searchPhrase) {
         const image = imageResult.items[0];
         resolve(`${image.link} ${image.title}`);
       } catch (error) {
-        return (resolve('Something went wrong :thinking: Probably daily API limit reached...'));
+        return (resolve('Something went wrong :thinking: Try again.'));
       }
     });
     req.on('error', (err) => {
