@@ -188,17 +188,18 @@ function checkAlert(channel) {
           const { stream } = statusResult;
           embed.setAuthor(stream.channel.display_name, stream.channel.logo);
           embed.addField('Title', stream.channel.status);
-          embed.addField('Game', stream.game);
-          embed.addField('Viewers', stream.viewers);
+          embed.addField('Game', stream.game, true);
+          embed.addField('Viewers', stream.viewers, true);
           embed.setURL(stream.channel.url);
           embed.addField('Url', stream.channel.url);
           const { preview } = stream;
-          if (!_.isNil(preview) && !_.isNil(preview.large)) {
-            embed.setThumbnail(preview.large);
+          if (!_.isNil(preview) && !_.isNil(preview.medium)) {
+            embed.setImage(preview.medium);
           }
           if (!_.isNil(stream.profile_banner_background_color)) {
             embed.setColor(stream.profile_banner_background_color);
           }
+          embed.setThumbnail(stream.channel.logo);
           alerts[channel].online = true;
           resolve({ channel: announcements, message: embed, channelName: stream.channel.display_name });
         }
