@@ -70,6 +70,7 @@ function userInfo(parameters, message) {
     if (author.avatarURL || author.user.avatarURL) {
       embed.setAuthor(userName, author.avatarURL || author.user.avatarURL);
       embed.setImage(author.avatarURL || author.user.avatarURL);
+      embed.setThumbnail(author.avatarURL || author.user.avatarURL);
     } else {
       embed.setAuthor(userName);
     }
