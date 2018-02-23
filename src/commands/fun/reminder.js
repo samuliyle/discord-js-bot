@@ -7,9 +7,9 @@ function reminder(message, sender) {
   if (message.length === 0 || message.length === 1) return Promise.resolve('Incorrect format. !remind <minutes> <message>');
   const msg = message.join(' ');
   return new Promise((resolve) => {
-    if (!_.isNaN(message[0])) {
+    if (!isNaN(message[0])) {
       const time = _.parseInt(message[0]);
-      if (time > 10080 || _.isNaN(time)) return resolve('Maximum time is 7 days (10080 minutes)');
+      if (time > 10080 || isNaN(time)) return resolve('Maximum time is 7 days (10080 minutes)');
       if (time < 1) return resolve('Time must be at least 1 minute.');
       setTimeout(() => {
         sender.reply(`:fire: REMEMBER: ${msg.split(' ').slice(1).join(' ')}! :fire:`);
