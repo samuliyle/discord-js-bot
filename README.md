@@ -24,7 +24,7 @@ Api commands
 
 Command | Parameters | Description
 --- | --- | ---
-Bing | search text | Random image from Bing
+~~Bing~~ Google | search text | Random image from ~~Bing~~ Google
 Imgur | Subreddit name | Random imgur image from subreddit
 Mörkö | message | Uses Cleverbot to answer the message
 Cat | | Random cat image
