@@ -87,7 +87,7 @@ function colorLoop(parameters, message) {
         message,
         interval: loop
     });
-    return Promise.resolve(`Color loop started. Changing color every ${time / 60000} minutes.`);
+    return Promise.resolve(`Color loop started. Changing your color every ${time / 60000} minutes.`);
 }
 
 module.exports = {
