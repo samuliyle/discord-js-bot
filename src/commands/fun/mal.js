@@ -66,134 +66,132 @@ function malSearch(searchPhrase, message) {
         return;
     }
     return new Promise((resolve, reject) => {
-        // Catch MAL wrapper library errors...
-        try {
-            malClient
-                .searchAnimes(searchPhrase)
-                .then((res) => {
-                    if (_.isNil(res) || _.isEmpty(res)) {
-                        resolve('No animes found');
-                    } else if (res.length === 1) {
-                        const embed = animeEmbed(_.head(res));
-                        message
-                            .channel
-                            .send({embed});
-                        resolve();
-                    } else {
-                        res = res.slice(0, 50);
-                        let msg = `Found ${res.length} results.`;
-                        const pages = Math.ceil(res.length / pageCount);
-                        if (res.length > pageCount) {
-                            msg += ` Showing first ${pageCount}.\n`;
-                        } else {
-                            msg += '\n';
-                        }
-                        _.forEach(res, (value, index) => {
-                            if (index === pageCount) {
-                                return false;
-                            }
-                            msg += `${index + 1}: ${value.title}\n`;
+        malClient
+            .searchAnimes(searchPhrase)
+            .then((res) => {
+                if (_.isNil(res) || _.isEmpty(res)) {
+                    resolve('No results.');
+                } else if (res.length === 1) {
+                    const embed = animeEmbed(_.head(res));
+                    message
+                        .channel
+                        .send({
+                            embed
                         });
-                        msg += 'Type the number you would like to select';
-                        if (res.length > pageCount) {
-                            msg += ' or react to show more.';
-                        } else {
-                            msg += '.';
+                    resolve();
+                } else {
+                    res = res.slice(0, 50);
+                    let msg = `# Found ${res.length} results.`;
+                    const pages = Math.ceil(res.length / pageCount);
+                    if (res.length > pageCount) {
+                        msg += ` Showing first ${pageCount}.\n`;
+                    } else {
+                        msg += '\n';
+                    }
+                    _.forEach(res, (value, index) => {
+                        if (index === pageCount) {
+                            return false;
                         }
-                        message
-                            .channel
-                            .sendCode('markdown', msg)
-                            .then((listMessage) => {
-                                let moreMessage = null;
-                                let responseOk = false;
-                                if (pages > 1) {
-                                    listMessage
-                                        .react('➕')
-                                        .then(() => {
-                                            const filter = (reaction, user) => reaction.emoji.name === '➕' && user.id === message.author.id;
-                                            const reactionCollector = listMessage.createReactionCollector(filter, {time: 45000});
-                                            reactionCollector.on('collect', () => {
-                                                const pageCountNew = pageCount * 25;
-                                                let newMsg = '';
-                                                _.forEach(res.slice(pageCount), (value, index) => {
-                                                    const newIndex = index + pageCount;
-                                                    if (newIndex === pageCountNew) {
-                                                        return false;
-                                                    }
-                                                    newMsg += `${newIndex + 1}: ${value.title}\n`;
-                                                });
-                                                message
-                                                    .channel
-                                                    .sendCode('markdown', newMsg)
-                                                    .then((newMessage) => {
-                                                        moreMessage = newMessage;
-                                                        reactionCollector.stop();
-                                                    })
-                                                    .catch((err) => {
-                                                        reactionCollector.stop();
-                                                        reject(err);
-                                                    });
+                        msg += `${index + 1}: ${value.title}\n`;
+                    });
+                    msg += '\n# Type the number you would like to select.';
+                    if (res.length > pageCount) {
+                        msg += '\n# React ➕ to show more.';
+                    }
+                    msg += '\n# Type clear to clear current search.';
+                    message
+                        .channel
+                        .sendCode('markdown', msg)
+                        .then((listMessage) => {
+                            let moreMessage = null;
+                            let responseOk = false;
+                            if (pages > 1) {
+                                listMessage
+                                    .react('➕')
+                                    .then(() => {
+                                        const filter = (reaction, user) => reaction.emoji.name === '➕' && user.id === message.author.id;
+                                        const reactionCollector = listMessage.createReactionCollector(filter, {
+                                            time: 45000
+                                        });
+                                        reactionCollector.on('collect', () => {
+                                            const pageCountNew = pageCount * 25;
+                                            let newMsg = '';
+                                            _.forEach(res.slice(pageCount), (value, index) => {
+                                                const newIndex = index + pageCount;
+                                                if (newIndex === pageCountNew) {
+                                                    return false;
+                                                }
+                                                newMsg += `${newIndex + 1}: ${value.title}\n`;
                                             });
-                                        })
-                                        .catch(err => reject(err));
-                                }
-                                const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, {time: 45000});
-                                collector.on('end', (collected) => {
-                                    if (!_.isNil(moreMessage)) {
-                                        moreMessage
-                                            .delete()
-                                            .catch(err => reject(err));
-                                    }
-                                    if (_.isEmpty(collected) || !responseOk) {
-                                        listMessage
-                                            .delete()
-                                            .catch(err => reject(err));
-                                        message
-                                            .delete()
-                                            .catch(err => reject(err));
-                                    }
-                                });
-                                collector.on('collect', (response) => {
-                                    if (response.content === 'clear') {
-                                        response
-                                            .delete()
-                                            .catch(err => reject(err));
-                                        collector.stop();
-                                    } else {
-                                        const index = parseInt(response.content, 10);
-                                        if (index == null || isNaN(index) || index === 0 || index > res.length) {
-                                            // message.channel.sendMessage('Invalid index');
-                                        } else {
-                                            const anime = _.nth(res, index - 1);
-                                            if (!_.isNil(moreMessage)) {
-                                                moreMessage
-                                                    .delete()
-                                                    .catch(err => reject(err));
-                                            }
-                                            response
-                                                .delete()
-                                                .then(() => {
-                                                    responseOk = true;
-                                                    const embed = animeEmbed(anime);
-                                                    listMessage.edit(embed);
-                                                    listMessage.clearReactions();
-                                                    collector.stop();
+                                            message
+                                                .channel
+                                                .sendCode('markdown', newMsg)
+                                                .then((newMessage) => {
+                                                    moreMessage = newMessage;
+                                                    reactionCollector.stop();
                                                 })
                                                 .catch((err) => {
-                                                    collector.stop();
+                                                    reactionCollector.stop();
                                                     reject(err);
                                                 });
-                                        }
-                                    }
-                                });
+                                        });
+                                    })
+                                    .catch(err => reject(err));
+                            }
+                            const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, {
+                                time: 45000
                             });
-                        resolve();
-                    }
-                })
-                .catch(err => reject(err));
-        } catch (e) {
-            reject(e);
-        }
+                            collector.on('end', (collected) => {
+                                if (!_.isNil(moreMessage)) {
+                                    moreMessage
+                                        .delete()
+                                        .catch(err => reject(err));
+                                }
+                                if (_.isEmpty(collected) || !responseOk) {
+                                    listMessage
+                                        .delete()
+                                        .catch(err => reject(err));
+                                    message
+                                        .delete()
+                                        .catch(err => reject(err));
+                                }
+                            });
+                            collector.on('collect', (response) => {
+                                if (response.content === 'clear') {
+                                    response
+                                        .delete()
+                                        .catch(err => reject(err));
+                                    collector.stop();
+                                } else {
+                                    const index = parseInt(response.content, 10);
+                                    if (index == null || isNaN(index) || index === 0 || index > res.length) {
+                                        // message.channel.sendMessage('Invalid index');
+                                    } else {
+                                        const anime = _.nth(res, index - 1);
+                                        response
+                                            .delete()
+                                            .then(() => {
+                                                responseOk = true;
+                                                const embed = animeEmbed(anime);
+                                                listMessage.edit(embed);
+                                                listMessage.clearReactions();
+                                                collector.stop();
+                                            })
+                                            .catch((err) => {
+                                                collector.stop();
+                                                reject(err);
+                                            });
+                                    }
+                                }
+                            });
+                        });
+                    resolve();
+                }
+            })
+            .catch((err) => {
+                message.channel.sendMessage('No results.');
+                reject(err);
+            });
     });
 }
 
