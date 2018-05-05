@@ -1,10 +1,12 @@
-const popura = require('popura');
+const Chinmei = require('chinmei');
 const Discord = require('discord.js');
 const Promise = require('bluebird');
 const _ = require('lodash');
 const constants = require('../../../config/constants');
 
-const malClient = popura(constants.MAL_USERNAME, constants.MAL_PASSWORD);
+const myChinmei = new Chinmei(constants.MAL_USERNAME, constants.MAL_PASSWORD);
+
+const collectors = [];
 
 const pageCount = 25;
 
@@ -34,7 +36,7 @@ function animeEmbed(anime) {
         syn = _.head(syns);
     }
     if (!_.isEmpty(syn)) {
-        embed.addField('Synopsis', syn);
+        embed.addField('Synopsis preview', syn);
     }
     if (!_.isNil(score)) {
         embed.addField('⭐Score', score, true);
@@ -61,13 +63,38 @@ function animeEmbed(anime) {
     return embed;
 }
 
+function sortByInput(input, data) {
+    const first = [];
+    const second = [];
+    const third = [];
+    const others = [];
+    _.forEach((data), (value) => {
+        if (value.title.toLowerCase().indexOf(input) === 0) {
+            first.push(value);
+        } else if (!_.isEmpty(value.english) && value.english.toLowerCase().indexOf(input) === 0) {
+            second.push(value);
+        } else if (!_.isEmpty(value.synopsis) && value.synopsis.toLowerCase().indexOf(input) === 0) {
+            third.push(value);
+        } else {
+            others.push(value);
+        }
+    });
+    return (first.concat(second, third, others));
+}
+
 function malSearch(searchPhrase, message) {
     if (_.isEmpty(searchPhrase)) {
         return;
     }
+    _.forEach(collectors, (value) => {
+        if (value.author === message.author.id && !value.collector.ended) {
+            value.collector.stop();
+        }
+    });
+    const phrase = searchPhrase.join(' ').toString();
+    _.remove(collectors, value => value.author === message.author.id);
     return new Promise((resolve, reject) => {
-        malClient
-            .searchAnimes(searchPhrase)
+        myChinmei.searchAnimes(phrase)
             .then((res) => {
                 if (_.isNil(res) || _.isEmpty(res)) {
                     resolve('No results.');
@@ -80,7 +107,7 @@ function malSearch(searchPhrase, message) {
                         });
                     resolve();
                 } else {
-                    res = res.slice(0, 50);
+                    res = sortByInput(phrase.toLowerCase(), res).slice(0, 50);
                     let msg = `# Found ${res.length} results.`;
                     const pages = Math.ceil(res.length / pageCount);
                     if (res.length > pageCount) {
@@ -113,6 +140,10 @@ function malSearch(searchPhrase, message) {
                                         const reactionCollector = listMessage.createReactionCollector(filter, {
                                             time: 45000
                                         });
+                                        collectors.push({
+                                            collector: reactionCollector,
+                                            author: message.author.id
+                                        });
                                         reactionCollector.on('collect', () => {
                                             const pageCountNew = pageCount * 25;
                                             let newMsg = '';
@@ -140,6 +171,10 @@ function malSearch(searchPhrase, message) {
                             }
                             const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, {
                                 time: 45000
+                            });
+                            collectors.push({
+                                collector,
+                                author: message.author.id
                             });
                             collector.on('end', (collected) => {
                                 if (!_.isNil(moreMessage)) {
