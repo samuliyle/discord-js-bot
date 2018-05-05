@@ -24,6 +24,7 @@
     "node-emoji": "^1.5.1",
     "node-glob-loader": "0.0.15",
     "parse-color": "^1.0.0",
+    "popura": "^1.2.5",
     "ramda": "^0.24.1",
     "simple-ajax": "^2.6.0"
   },
