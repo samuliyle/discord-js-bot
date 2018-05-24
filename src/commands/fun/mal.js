@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const constants = require('../../../config/constants');
 
-const myChinmei = new Chinmei(constants.MAL_USERNAME, constants.MAL_PASSWORD);
+// const myChinmei = new Chinmei(constants.MAL_USERNAME, constants.MAL_PASSWORD);
 
 const collectors = [];
 
@@ -230,9 +230,9 @@ function malSearch(searchPhrase, message) {
     });
 }
 
-module.exports = {
-    mal: malSearch,
-    anime: malSearch,
-    malsearch: malSearch,
-    animesearch: malSearch
-};
+// module.exports = {
+//     mal: malSearch,
+//     anime: malSearch,
+//     malsearch: malSearch,
+//     animesearch: malSearch
+// };
