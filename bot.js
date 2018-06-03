@@ -1,6 +1,9 @@
 const Discord = require('discord.js');
 const Promise = require('bluebird');
 const _ = require('lodash');
+const Typo = require('typo-js');
+
+const dictionary = new Typo('en_US');
 
 const alerts = require('./src/alerts');
 const constants = require('./config/constants');
@@ -79,13 +82,17 @@ client.on('ready', () => {
 });
 
 client.on('message', (message) => {
-  const msg = message.content;
+  let msg = message.content;
   if (msg) {
     // Ignore bots
     if (message.author.bot) {
       return;
     }
     if (_.startsWith(msg, '!')) {
+      if (_.startsWith(msg, '! ') && msg.length > 2) {
+        msg = _.trim(msg);
+        msg = msg.slice(0, 1) + msg.slice(2);
+      }
       const parameters = _.split(msg, ' ');
       const command = parameters[0]
         .substring(1)
@@ -96,6 +103,17 @@ client.on('message', (message) => {
       let cmd = commands[command];
       if (command === 'eval') {
         cmd = evalCommand;
+      }
+      if (_.isNil(cmd)) {
+        const suggested = dictionary.suggest(command);
+        if (!_.isEmpty(suggested)) {
+          _.forEach(suggested, (value) => {
+            cmd = _.get(commands, value);
+            if (!_.isNil(cmd)) {
+              return false;
+            }
+          });
+        }
       }
       if (cmd) {
         handleCommand(cmd, parameters.slice(1), message, command);

@@ -18,7 +18,7 @@
     "cleverbot-node": "^0.3.10",
     "discord.js": "^11.0.0",
     "glob": "^7.0.6",
-    "lodash": "^4.17.4",  
+    "lodash": "^4.17.4",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.14",
     "mysql": "^2.11.1",
@@ -26,7 +26,8 @@
     "node-glob-loader": "0.0.15",
     "parse-color": "^1.0.0",
     "ramda": "^0.24.1",
-    "simple-ajax": "^2.6.0"
+    "simple-ajax": "^2.6.0",
+    "typo-js": "^1.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.14.0",
