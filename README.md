@@ -28,6 +28,7 @@ Command | Parameters | Description
 Imgur | Subreddit name | Random imgur image from subreddit
 Mörkö | message | Uses Cleverbot to answer the message
 Cat | | Random cat image
+MAL | anime name | (disabled until MAL enables their API again)
 
 Message log commands
 ------
