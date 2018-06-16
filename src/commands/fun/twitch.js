@@ -186,30 +186,30 @@ function checkAlert(channel) {
           });
           const embed = new Discord.RichEmbed();
           const { stream } = statusResult;
-          if (!_.isNil(stream.channel.display_name) && !_.isNil(stream.channel.logo)) {
+          if (!_.isEmpty(stream.channel.display_name) && !_.isEmpty(stream.channel.logo)) {
             embed.setAuthor(stream.channel.display_name, stream.channel.logo);
           }
-          if (!_.isNil(stream.channel.status)) {
+          if (!_.isEmpty(stream.channel.status)) {
             embed.addField('Title', stream.channel.status);
           }
-          if (!_.isNil(stream.game)) {
+          if (!_.isEmpty(stream.game)) {
             embed.addField('Game', stream.game, true);
           }
           if (!_.isNil(stream.viewers)) {
             embed.addField('Viewers', stream.viewers, true);
           }
-          if (!_.isNil(stream.channel.url)) {
+          if (!_.isEmpty(stream.channel.url)) {
             embed.setURL(stream.channel.url);
             embed.addField('Url', stream.channel.url);
           }
           const { preview } = stream;
-          if (!_.isNil(preview) && !_.isNil(preview.medium)) {
+          if (!_.isNil(preview) && !_.isEmpty(preview.medium)) {
             embed.setImage(preview.medium);
           }
-          if (!_.isNil(stream.profile_banner_background_color)) {
+          if (!_.isEmpty(stream.profile_banner_background_color)) {
             embed.setColor(stream.profile_banner_background_color);
           }
-          if (!_.isNil(stream.channel.logo)) {
+          if (!_.isEmpty(stream.channel.logo)) {
             embed.setThumbnail(stream.channel.logo);
           }
           alerts[channel].online = true;
