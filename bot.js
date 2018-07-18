@@ -14,6 +14,7 @@ const database = require('./database');
 const logger = require('./src/utility/utility');
 
 let loggedIn = false;
+const randomName = _.nth(process.argv, 2) === '-r';
 
 const client = new Discord.Client();
 client.login(constants.LOGIN_TOKEN);
@@ -77,7 +78,10 @@ client.on('ready', () => {
   if (!loggedIn) {
     loggedIn = true;
     alerts.loadAlerts(commands.getalerts, client, commands.checkalert);
-    database.randomName(client);
+    if (randomName) {
+      logger.logMessage('Random name enabled...', 'info');
+      database.randomName(client);
+    }
   }
 });
 
