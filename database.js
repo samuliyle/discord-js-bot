@@ -3,29 +3,50 @@ const mysql = require('mysql');
 const constants = require('./config/constants');
 const _ = require('lodash');
 const emoji = require('node-emoji');
+const logger = require('./src/utility/utility');
 
-const connection = mysql.createConnection({
+const dbConfig = {
   host: constants.DB_URL,
   user: constants.DB_USERNAME,
   password: constants.DB_PASSWORD,
   database: constants.DB,
   charset: 'utf8mb4',
-});
+};
 
-connection.connect((err) => {
-  if (err) {
-    console.log('Error connecting to database.');
-    console.log(err.stack);
-    return;
-  }
-  console.log('Connected to database.');
-});
+let connection;
+
+// Source: https://stackoverflow.com/questions/20210522/nodejs-mysql-error-connection-lost-the-server-closed-the-connection
+function handleDisconnect() {
+  logger.logMessage('Connecting to database.', 'info');
+  connection = mysql.createConnection(dbConfig);
+
+  connection.connect((err) => {
+    if (err) {
+      logger.logMessage(`Error when connecting to db: Error: ${err}`, 'error');
+      setTimeout(handleDisconnect, 2000);
+    } else {
+      logger.logMessage('Connected to DB.', 'info');
+    }
+  });
+
+  connection.on('error', (err) => {
+    logger.logMessage(`DB error: Error: ${err}`, 'error');
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleDisconnect();
+    } else {
+      throw err;
+    }
+  });
+}
+
+// Connect to DB
+handleDisconnect();
 
 function logMessage(msg) {
   connection.query('INSERT INTO messages (message, userId, channelId, username, time) values(?, ?, ?, ?, ?)',
-  [msg.content, msg.author.id, msg.channel.id, msg.author.username, new Date()], (err) => {
-    if (err) throw err;
-  });
+    [msg.content, msg.author.id, msg.channel.id, msg.author.username, new Date()], (err) => {
+      if (err) throw err;
+    });
 }
 
 function logCommand(command, parameters, msg, executionTime, ownCommand) {
@@ -35,10 +56,10 @@ function logCommand(command, parameters, msg, executionTime, ownCommand) {
   }
   connection.query(
     'INSERT INTO commands (command, parameters, username, user_id, channel_id, guild_id, execution_time, time, own_command) values(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-  [command, parameter, msg.author.username, msg.author.id, msg.channel.id, msg.guild.id, executionTime, new Date(), ownCommand], (err) => {
-    if (err) throw err;
-  }
-);
+    [command, parameter, msg.author.username, msg.author.id, msg.channel.id, msg.guild.id, executionTime, new Date(), ownCommand], (err) => {
+      if (err) throw err;
+    }
+  );
 }
 
 function randomName(client) {
@@ -74,13 +95,13 @@ function randomName(client) {
       const guild = client.guilds.get(constants.BEST_SERVER);
       if (!_.isNil(guild)) {
         guild.members.get(client.user.id)
-        .setNickname(emojiName)
-        .then(() => {
-          console.log('New name: ' + emojiName);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+          .setNickname(emojiName)
+          .then(() => {
+            console.log('New name: ' + emojiName);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
     });
   }, 3600000); // 60 minutes
