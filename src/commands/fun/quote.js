@@ -90,6 +90,7 @@ function findOccurance(parameters, message, commandName) {
 module.exports = {
   quite: randomQuote,
   quit: randomQuote,
+  quot: randomQuote,
   quote: randomQuote,
   randomquote: randomQuote,
   phrase: searchPhrase,
