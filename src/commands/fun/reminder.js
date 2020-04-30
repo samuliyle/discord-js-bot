@@ -24,7 +24,13 @@ function reminder(message, sender) {
       if (time > 10080 || isNaN(time)) return resolve('Maximum time is 7 days (10080 minutes)');
       if (time < 1) return resolve('Time must be at least 1 minute.');
       setTimeout(() => {
-        sender.reply(`:fire: REMEMBER: ${msg.split(' ').slice(1).join(' ')}! :fire:`);
+        let reminderMsg = '';
+        if (message.length === 1) {
+          reminderMsg = msg;
+        } else {
+          reminderMsg = msg.split(' ').slice(1).join(' ');
+        }
+        sender.reply(`:fire: REMEMBER: ${reminderMsg}! :fire:`);
       }, time * 60000);
       const minuteMsg = time === 1 ? 'minute' : 'minutes';
       return resolve(`Reminding you in ${time} ${minuteMsg}.`);
