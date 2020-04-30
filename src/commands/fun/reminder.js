@@ -2,10 +2,22 @@ const Promise = require('bluebird');
 const chrono = require('chrono-node');
 const moment = require('moment');
 const _ = require('lodash');
+const database = require('../../../database');
 
 function reminder(message, sender) {
-  if (message.length === 0 || message.length === 1) return Promise.resolve('Incorrect format. !remind <minutes> <message>');
-  const msg = message.join(' ');
+  if (message.length === 0) return Promise.resolve('Incorrect format. !remind <minutes> <message>');
+  let msg;
+  if (message.length === 1) {
+    database.connection.query(`CALL get_rands(${1}, ${sender.channel.id})`, (err, result) => {
+      if (result == null || result.length === 0 || result[0].length === 0) {
+        msg = '';
+      } else {
+        msg = result[0][0].message;
+      }
+    });
+  } else {
+    msg = message.join(' ');
+  }
   return new Promise((resolve) => {
     if (!isNaN(message[0])) {
       const time = _.parseInt(message[0]);
