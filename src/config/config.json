@@ -1,6 +1,6 @@
 {
-    "database": {
-      "url": "localhost",
-      "name": "discord"
-    }
+  "database": {
+    "url": "localhost",
+    "name": "discord"
   }
+}

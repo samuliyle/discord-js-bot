@@ -1,15 +1,14 @@
-import { SlashCommandBuilder } from "discord.js";
-import { CommandOptions } from "../types/index";
+import {SlashCommandBuilder} from 'discord.js'
+import {CommandOptions} from '../types/index'
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("ping")
-    .setDescription("Replies with Pong!"),
+    .setName('ping')
+    .setDescription('Replies with Pong!'),
   async execute(interaction) {
-    await interaction.reply("Pong!");
+    await interaction.reply('Pong!')
   },
   options: {
-    disabled: false,
-  },
+    disabled: false
+  }
 } as CommandOptions
-

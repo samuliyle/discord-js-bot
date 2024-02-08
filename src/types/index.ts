@@ -2,39 +2,42 @@ import {
   ChatInputCommandInteraction,
   CommandInteraction,
   SlashCommandBuilder,
-  SlashCommandSubcommandBuilder,
-} from "discord.js";
-import { MysqlError } from "mysql";
+  SlashCommandSubcommandBuilder
+} from 'discord.js'
+import {MysqlError} from 'mysql'
 
 export enum LogLevel {
-  DEBUG = "DEBUG",
-  INFO = "INFO",
-  WARNING = "WARNING",
-  ERROR = "ERROR",
+  DEBUG = 'DEBUG',
+  INFO = 'INFO',
+  WARNING = 'WARNING',
+  ERROR = 'ERROR'
 }
 
-export type QueryCallback = (err: MysqlError | null, result?: any) => void | Promise<void>;
+export type QueryCallback = (
+  err: MysqlError | null,
+  result?: any
+) => void | Promise<void>
 
 export interface CommandOptions {
-  data: SlashCommandBuilder | SlashCommandSubcommandBuilder;
+  data: SlashCommandBuilder | SlashCommandSubcommandBuilder
   execute: (
     interaction: CommandInteraction | ChatInputCommandInteraction
-  ) => Promise<void>;
+  ) => Promise<void>
   options: {
-    disabled: boolean;
-  };
+    disabled: boolean
+  }
 }
 
 export type GoogleImageResponse = {
   items?: {
-    title: string;
-    link: string;
-  }[];
-};
+    title: string
+    link: string
+  }[]
+}
 
 export type GoogleErrorResponse = {
   error: {
-    code: number;
-    message: string;
-  };
-};
+    code: number
+    message: string
+  }
+}
