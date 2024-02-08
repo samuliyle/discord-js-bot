@@ -1,10 +1,10 @@
 # discord-js-bot
 
-A rewrite/restructuring of my [discordBot](https://github.com/wraithyz/discordBot) in JavaScript.
+Discord bot written in TypeScript using discord.js
 
 ## Commands
 
-Command prefix: !
+Now with slash commands
 
 Info commands
 ------
