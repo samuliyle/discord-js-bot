@@ -6,49 +6,30 @@ Discord bot written in TypeScript using discord.js
 
 Now with slash commands
 
-## Info commands
+| Command | Parameters                  | Description                                   |
+| ------- | --------------------------- | --------------------------------------------- |
+| Chat    | Message to write to the bot | Returns cleverbot answer                      |
+| Google  | Image search phrase         | Searches Google image                         |
+| Ping    |                             | Ping pong                                     |
+| Quote   |                             | Returns random message from the guild history |
+| Remind  | minutes, message            | Reminds after given minutes                   |
+| Uptime  |                             | Bots uptime                                   |
 
-| Command     | Parameters                | Description                      |
-| ----------- | ------------------------- | -------------------------------- |
-| Userinfo    | username/nickname/mention | User info (creation date etc)    |
-| Command     | command name              | Usage stats of command           |
-| Commands    |                           | List of commands                 |
-| Channelinfo |                           | Channel info (creation date etc) |
-| Guildinfo   |                           | Guild info (creation date etc)   |
-| Info        |                           | Info about the bot               |
-| Uptime      |                           | Bots uptime                      |
+## Secrets
 
-## Api commands
+Rename secrets_sample.json to secrets.json.
 
-| Command         | Parameters     | Description                                  |
-| --------------- | -------------- | -------------------------------------------- |
-| ~~Bing~~ Google | search text    | Random image from ~~Bing~~ Google            |
-| Imgur           | Subreddit name | Random imgur image from subreddit            |
-| Mörkö           | message        | Uses Cleverbot to answer the message         |
-| Cat             |                | Random cat image                             |
-| MAL             | anime name     | (disabled until MAL enables their API again) |
+Enter bot token and client id to secrets.json.
 
-## Message log commands
+(optional) Enter Google, Database, Cleverbot secrets to enable Google, Cleverbot and database commands.
 
-| Command     | Parameters         | Description                            |
-| ----------- | ------------------ | -------------------------------------- |
-| Quote       | (number of quotes) | Random quotes from the channel         |
-| Phrase      | search phrase      | Random quote containing the phrase     |
-| Phrasecount | search phrase      | Number of quotes containing the phrase |
-| Last        | search phrase      | Last quote containing the phrase       |
-| First       | search phrase      | First quote containing the phrase      |
+## MySQL Database
 
-## Twitch commands
+Create database called 'discord' and import schema
 
-| Command     | Parameters          | Description                                                    |
-| ----------- | ------------------- | -------------------------------------------------------------- |
-| Addalert    | twitch channel name | Adds a alert that will inform when Twitch channel comes online |
-| Removealert | twitch channel name | Removes the alert                                              |
-| Alerts      |                     | Lists the users alerts                                         |
-
-## Various commands
-
-| Command | Parameters       | Description                 |
-| ------- | ---------------- | --------------------------- |
-| 8Ball   | question         | 8Ball answer                |
-| Remind  | minutes, message | Reminds after given minutes |
+```
+mysql -u <username> -p
+create database discord;
+exit;
+mysql -u <username> -p discord < schema.sql
+```
