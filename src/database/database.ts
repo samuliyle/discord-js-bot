@@ -1,12 +1,12 @@
 import mysql from 'mysql'
 import secrets from '../config/secrets.json'
 import config from '../config/config.json'
-import {logDebug, logError, logInfo} from '../utility/log'
+import {logDebug, logError, logInfo, logWarning} from '../utility/log'
 import {Message} from 'discord.js'
 import {QueryCallback} from '../types'
 import {randomIntFromInterval} from '../utility/utility'
 
-export let databaseConnectionOk = false
+let databaseConnectionOk = false
 const pool = mysql.createPool({
   host: config.database.url,
   database: config.database.name,
@@ -19,15 +19,14 @@ const testConnection = () => {
   try {
     query('SELECT 1', undefined, err => {
       if (err) {
-        logError('Disabling database commands, connection failed.')
-        logError(err)
+        logWarning('Disabling database commands, connection failed')
         return
       }
       logInfo('Database connection successful, enabling database commands.')
       databaseConnectionOk = true
     })
   } catch (error) {
-    logError(error)
+    logError('SQL test connection failed', error)
   }
 }
 
@@ -39,14 +38,13 @@ const query = (
   pool.getConnection((err, connection) => {
     logDebug(queryString)
     if (err) {
-      logError(err)
       return callback(err)
     }
 
     const callbackFunc: QueryCallback = (err, results) => {
       connection.release()
       if (err) {
-        logError(err)
+        logError('SQL ERROR', err)
         return callback(err)
       }
       callback(null, results)
@@ -86,10 +84,14 @@ export const insertMessage = (msg: Message) => {
     [msg.content, msg.author.id, msg.channel.id, msg.author.username],
     err => {
       if (err) {
-        logError(err)
+        logError('Failed to insert new message', err)
       }
     }
   )
+}
+
+export const isDatabaseConnected = () => {
+  return databaseConnectionOk
 }
 
 testConnection()

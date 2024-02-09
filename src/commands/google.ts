@@ -9,6 +9,7 @@ import {
   GoogleImageResponse
 } from '../types/index'
 import {randomIntFromInterval} from '../utility/utility'
+import {logWarning} from '../utility/log'
 
 export default {
   data: new SlashCommandSubcommandBuilder()
@@ -43,6 +44,9 @@ export default {
     const data = await imageResponse.json()
     if (!imageResponse.ok) {
       const errorResponse = data as GoogleErrorResponse
+      logWarning(
+        `Google image search returned error ${errorResponse.error.code}: ${errorResponse.error.message}`
+      )
       await interaction.reply(
         `Google returned error ${errorResponse.error.code}: ${errorResponse.error.message}`
       )
@@ -59,6 +63,7 @@ export default {
     await interaction.reply(`${image.link} ${image.title}`)
   },
   options: {
-    disabled: !secrets.google?.cx || !secrets.google?.id
+    disabled: !secrets.google?.cx || !secrets.google?.id,
+    disabledReason: 'Google api tokens missing from secrets.'
   }
 } as CommandOptions

@@ -4,6 +4,9 @@ import fs from 'fs'
 import {logInfo, logWarning, logError, logDebug} from './utility/log'
 import {CommandOptions} from './types'
 
+/**
+ * Inits all the commands by seaching all .ts files in commands folder
+ */
 export const setupCommands = (client: Client) => {
   client.commands = new Collection()
 
@@ -40,10 +43,10 @@ export const registerCommands = async (client: Client, clientId: string) => {
     logWarning('No commands loaded')
     return
   }
-  // Construct and prepare an instance of the REST module
-  const rest = new REST({version: '10'}).setToken(client.token)
-
+  
   try {
+    const rest = new REST({version: '10'}).setToken(client.token)
+
     logInfo(
       `Started refreshing ${commandsInJson.length} application (/) commands.`
     )
@@ -53,8 +56,8 @@ export const registerCommands = async (client: Client, clientId: string) => {
       body: commandsInJson
     })
 
-    logInfo('Successfully reloaded application (/) commands.')
+    logInfo('Successfully refreshed application (/) commands.')
   } catch (error) {
-    logError(error)
+    logError("Failed to refresh commands", error)
   }
 }

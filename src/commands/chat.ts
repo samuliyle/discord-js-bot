@@ -33,6 +33,7 @@ export default {
     })
   },
   options: {
-    disabled: !secrets.cleverbot?.key
+    disabled: !secrets.cleverbot?.key,
+    disabledReason: 'Cleverbot api key missing.'
   }
 } as CommandOptions

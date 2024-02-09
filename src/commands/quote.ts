@@ -1,5 +1,5 @@
 import {CommandInteractionOptionResolver, SlashCommandBuilder} from 'discord.js'
-import {databaseConnectionOk, getRandomMessage} from '../database/database'
+import {getRandomMessage, isDatabaseConnected} from '../database/database'
 import {CommandOptions} from '../types/index'
 import secrets from '../config/secrets.json'
 import {formatTime} from '../utility/utility'
@@ -43,6 +43,7 @@ export default {
     disabled:
       !secrets.database?.password ||
       !secrets.database?.username ||
-      !databaseConnectionOk
+      !isDatabaseConnected(),
+    disabledReason: 'Failed to connect to database.'
   }
 } as CommandOptions

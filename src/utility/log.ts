@@ -1,4 +1,9 @@
-import {LogLevel} from '../types'
+enum LogLevel {
+  DEBUG = 'DEBUG',
+  INFO = 'INFO',
+  WARNING = 'WARNING',
+  ERROR = 'ERROR'
+}
 
 const logMessage = (message: string | unknown, type: LogLevel) => {
   let logMessage = message
@@ -10,18 +15,21 @@ const logMessage = (message: string | unknown, type: LogLevel) => {
   console.log(`[${new Date().toISOString()}] [${type}]: ${logMessage}`)
 }
 
-export const logDebug = (message: string | unknown) => {
+export const logDebug = (message: string) => {
   logMessage(message, LogLevel.DEBUG)
 }
 
-export const logInfo = (message: string | unknown) => {
+export const logInfo = (message: string) => {
   logMessage(message, LogLevel.INFO)
 }
 
-export const logWarning = (message: string | unknown) => {
+export const logWarning = (message: string) => {
   logMessage(message, LogLevel.WARNING)
 }
 
-export const logError = (message: string | unknown) => {
+export const logError = (message: string, exception?: unknown) => {
   logMessage(message, LogLevel.ERROR)
+  if (exception) {
+    logMessage(exception, LogLevel.ERROR)
+  }
 }

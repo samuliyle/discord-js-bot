@@ -6,13 +6,6 @@ import {
 } from 'discord.js'
 import {MysqlError} from 'mysql'
 
-export enum LogLevel {
-  DEBUG = 'DEBUG',
-  INFO = 'INFO',
-  WARNING = 'WARNING',
-  ERROR = 'ERROR'
-}
-
 export type QueryCallback = (
   err: MysqlError | null,
   result?: any
@@ -25,6 +18,7 @@ export interface CommandOptions {
   ) => Promise<void>
   options: {
     disabled: boolean
+    disabledReason?: string
   }
 }
 

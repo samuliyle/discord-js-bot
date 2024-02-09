@@ -61,8 +61,12 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 
   if (command.options.disabled) {
+    let disabledResponse = 'This command is disabled.'
+    if (command.options.disabledReason) {
+      disabledResponse += ` (${command.options.disabledReason})`
+    }
     await interaction.reply({
-      content: 'This command is disabled.'
+      content: disabledResponse
     })
     return
   }
@@ -70,7 +74,7 @@ client.on(Events.InteractionCreate, async interaction => {
   try {
     await command.execute(interaction)
   } catch (error) {
-    logError(error)
+    logError(`Failed to execute command ${interaction.commandName}`, error)
     await interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true
