@@ -17,7 +17,7 @@ describe('uptime command', () => {
     const command: CommandOptions = uptime
     await command.execute(interaction as any)
 
-    expect(interaction.reply).toBeCalledWith('1d 03:46:40')
-    expect(mockUptime).toBeCalled()
+    expect(interaction.reply).toHaveBeenCalledWith('1d 03:46:40')
+    expect(mockUptime).toHaveBeenCalled()
   })
 })

@@ -15,6 +15,6 @@ describe('ping command', () => {
     }
     const command: CommandOptions = ping
     await command.execute(interaction as any)
-    expect(interaction.reply).toBeCalledWith('Pong!')
+    expect(interaction.reply).toHaveBeenCalledWith('Pong!')
   })
 })

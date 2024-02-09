@@ -62,15 +62,15 @@ describe('google command', () => {
     const command: CommandOptions = google
     await command.execute(interaction as any)
 
-    expect(interaction.reply).toBeCalledWith('www.com/cat cat')
+    expect(interaction.reply).toHaveBeenCalledWith('www.com/cat cat')
 
-    expect(searchPhraseMock).toBeCalled()
-    expect(searchPhraseMock).toBeCalledWith('searchphrase', true)
-    expect(amountMock).toBeCalled()
-    expect(amountMock).toBeCalledWith('start')
+    expect(searchPhraseMock).toHaveBeenCalled()
+    expect(searchPhraseMock).toHaveBeenCalledWith('searchphrase', true)
+    expect(amountMock).toHaveBeenCalled()
+    expect(amountMock).toHaveBeenCalledWith('start')
 
-    expect(fetchSpy).toBeCalled()
-    expect(fetchSpy).toBeCalledWith(
+    expect(fetchSpy).toHaveBeenCalled()
+    expect(fetchSpy).toHaveBeenCalledWith(
       'https://www.googleapis.com/customsearch/v1?q=hello&searchType=image&cx=1&num=1&start=5&imgsize=medium&key=1'
     )
   })
@@ -102,17 +102,17 @@ describe('google command', () => {
     const command: CommandOptions = google
     await command.execute(interaction as any)
 
-    expect(interaction.reply).toBeCalledWith(
+    expect(interaction.reply).toHaveBeenCalledWith(
       'Google returned error 403: Forbidden'
     )
 
-    expect(searchPhraseMock).toBeCalled()
-    expect(searchPhraseMock).toBeCalledWith('searchphrase', true)
-    expect(amountMock).toBeCalled()
-    expect(amountMock).toBeCalledWith('start')
+    expect(searchPhraseMock).toHaveBeenCalled()
+    expect(searchPhraseMock).toHaveBeenCalledWith('searchphrase', true)
+    expect(amountMock).toHaveBeenCalled()
+    expect(amountMock).toHaveBeenCalledWith('start')
 
-    expect(fetchSpy).toBeCalled()
-    expect(fetchSpy).toBeCalledWith(
+    expect(fetchSpy).toHaveBeenCalled()
+    expect(fetchSpy).toHaveBeenCalledWith(
       'https://www.googleapis.com/customsearch/v1?q=hello&searchType=image&cx=1&num=1&start=5&imgsize=medium&key=1'
     )
   })
@@ -141,17 +141,17 @@ describe('google command', () => {
     const command: CommandOptions = google
     await command.execute(interaction as any)
 
-    expect(interaction.reply).toBeCalledWith(
+    expect(interaction.reply).toHaveBeenCalledWith(
       "Google didn't return any images. :thinking:"
     )
 
-    expect(searchPhraseMock).toBeCalled()
-    expect(searchPhraseMock).toBeCalledWith('searchphrase', true)
-    expect(amountMock).toBeCalled()
-    expect(amountMock).toBeCalledWith('start')
+    expect(searchPhraseMock).toHaveBeenCalled()
+    expect(searchPhraseMock).toHaveBeenCalledWith('searchphrase', true)
+    expect(amountMock).toHaveBeenCalled()
+    expect(amountMock).toHaveBeenCalledWith('start')
 
-    expect(fetchSpy).toBeCalled()
-    expect(fetchSpy).toBeCalledWith(
+    expect(fetchSpy).toHaveBeenCalled()
+    expect(fetchSpy).toHaveBeenCalledWith(
       'https://www.googleapis.com/customsearch/v1?q=hello&searchType=image&cx=1&num=1&start=5&imgsize=medium&key=1'
     )
   })

@@ -37,19 +37,21 @@ describe('reminder command', () => {
     const command: CommandOptions = reminder
     await command.execute(interaction as any)
 
-    expect(interaction.reply).toBeCalledWith('Reminding you in 10 minutes.')
+    expect(interaction.reply).toHaveBeenCalledWith(
+      'Reminding you in 10 minutes.'
+    )
 
-    expect(messageMock).toBeCalled()
-    expect(messageMock).toBeCalledWith('message')
-    expect(minutesMock).toBeCalled()
-    expect(minutesMock).toBeCalledWith('minutes', true)
+    expect(messageMock).toHaveBeenCalled()
+    expect(messageMock).toHaveBeenCalledWith('message')
+    expect(minutesMock).toHaveBeenCalled()
+    expect(minutesMock).toHaveBeenCalledWith('minutes', true)
 
-    expect(sendMock).not.toBeCalled()
+    expect(sendMock).not.toHaveBeenCalled()
 
     jest.runAllTimers()
 
-    expect(sendMock).toBeCalled()
-    expect(sendMock).toBeCalledWith('<@1> :fire: REMEMBER: food! :fire:')
+    expect(sendMock).toHaveBeenCalled()
+    expect(sendMock).toHaveBeenCalledWith('<@1> :fire: REMEMBER: food! :fire:')
   })
 
   test('reminds the caller in a dm', async () => {
@@ -69,18 +71,20 @@ describe('reminder command', () => {
     const command: CommandOptions = reminder
     await command.execute(interaction as any)
 
-    expect(interaction.reply).toBeCalledWith('Reminding you in 10 minutes.')
+    expect(interaction.reply).toHaveBeenCalledWith(
+      'Reminding you in 10 minutes.'
+    )
 
-    expect(messageMock).toBeCalled()
-    expect(messageMock).toBeCalledWith('message')
-    expect(minutesMock).toBeCalled()
-    expect(minutesMock).toBeCalledWith('minutes', true)
+    expect(messageMock).toHaveBeenCalled()
+    expect(messageMock).toHaveBeenCalledWith('message')
+    expect(minutesMock).toHaveBeenCalled()
+    expect(minutesMock).toHaveBeenCalledWith('minutes', true)
 
-    expect(sendMock).not.toBeCalled()
+    expect(sendMock).not.toHaveBeenCalled()
 
     jest.runAllTimers()
 
-    expect(sendMock).toBeCalled()
-    expect(sendMock).toBeCalledWith('<@1> :fire: REMEMBER: food! :fire:')
+    expect(sendMock).toHaveBeenCalled()
+    expect(sendMock).toHaveBeenCalledWith('<@1> :fire: REMEMBER: food! :fire:')
   })
 })
