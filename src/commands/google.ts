@@ -1,4 +1,3 @@
-import secrets from '../config/secrets.json'
 import {
   CommandInteractionOptionResolver,
   SlashCommandSubcommandBuilder
@@ -38,7 +37,7 @@ export default {
     const start = options.getInteger('start') ?? randomIntFromInterval(0, 15)
 
     const imageResponse = await fetch(
-      `https://www.googleapis.com/customsearch/v1?q=${searchPhrase}&searchType=image&cx=${secrets.google.cx}&num=1&start=${start}&imgsize=medium&key=${secrets.google.id}`
+      `https://www.googleapis.com/customsearch/v1?q=${searchPhrase}&searchType=image&cx=${process.env.GOOGLE_CX}&num=1&start=${start}&imgsize=medium&key=${process.env.GOOGLE_ID}`
     )
 
     const data = await imageResponse.json()
@@ -63,7 +62,7 @@ export default {
     await interaction.reply(`${image.link} ${image.title}`)
   },
   options: {
-    disabled: !secrets.google?.cx || !secrets.google?.id,
-    disabledReason: 'Google api tokens missing from secrets.'
+    disabled: !process.env.GOOGLE_ID || !process.env.GOOGLE_CX,
+    disabledReason: 'Google api tokens missing from env values'
   }
 } as CommandOptions

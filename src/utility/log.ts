@@ -5,7 +5,7 @@ enum LogLevel {
   ERROR = 'ERROR'
 }
 
-const logMessage = (message: string | unknown, type: LogLevel) => {
+const logMessage = (message: unknown, type: LogLevel) => {
   let logMessage = message
   if (message instanceof Error) {
     logMessage = `${message.name}: ${message.message} | stack: ${

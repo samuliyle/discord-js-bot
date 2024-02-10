@@ -1,15 +1,15 @@
+import 'dotenv/config'
 import {Events, Client, GatewayIntentBits} from 'discord.js'
-import secrets from './config/secrets.json'
 import {registerCommands, setupCommands} from './commands'
 import {logError, logInfo, logWarning} from './utility/log'
 import {CommandOptions} from './types'
 import {insertMessage} from './database/database'
 
-if (!secrets.bot.token) {
-  throw new Error('Bot token missing from secrets.json')
+if (!process.env.BOT_TOKEN) {
+  throw new Error('BOT_TOKEN value missing from env values')
 }
-if (!secrets.bot.clientId) {
-  throw new Error('Bot clientId missing from secrets.json')
+if (!process.env.BOT_CLIENT_ID) {
+  throw new Error('BOT_CLIENT_ID value missing from env values')
 }
 
 const client = new Client({
@@ -20,13 +20,13 @@ const client = new Client({
     GatewayIntentBits.MessageContent
   ]
 })
-client.login(secrets.bot.token)
+client.login(process.env.BOT_TOKEN)
 
 client.once(Events.ClientReady, c => {
   logInfo(`Ready! Logged in as ${c.user.tag}`)
   setupCommands(client)
   logInfo('Commands loaded')
-  registerCommands(client, secrets.bot.clientId)
+  registerCommands(client, process.env.BOT_CLIENT_ID!)
 })
 
 client.on(Events.MessageCreate, async message => {

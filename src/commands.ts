@@ -37,14 +37,14 @@ export const registerCommands = async (client: Client, clientId: string) => {
     return
   }
 
-  const commandsInJson = client.commands.map(c => c.data.toJSON())
-
-  if (commandsInJson.length === 0) {
-    logWarning('No commands loaded')
-    return
-  }
-
   try {
+    const commandsInJson = client.commands.map(c => c.data.toJSON())
+
+    if (commandsInJson.length === 0) {
+      logWarning('No commands loaded')
+      return
+    }
+
     const rest = new REST({version: '10'}).setToken(client.token)
 
     logInfo(

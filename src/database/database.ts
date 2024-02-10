@@ -1,6 +1,4 @@
 import mysql from 'mysql'
-import secrets from '../config/secrets.json'
-import config from '../config/config.json'
 import {logDebug, logError, logInfo, logWarning} from '../utility/log'
 import {Message} from 'discord.js'
 import {QueryCallback} from '../types'
@@ -8,10 +6,10 @@ import {randomIntFromInterval} from '../utility/utility'
 
 let databaseConnectionOk = false
 const pool = mysql.createPool({
-  host: config.database.url,
-  database: config.database.name,
-  user: secrets.database.username,
-  password: secrets.database.password,
+  host: process.env.DATABASE_URL,
+  database: process.env.DATABASE_NAME,
+  user: process.env.DATABASE_USERNAME,
+  password: process.env.DATABASE_PASSWORD,
   charset: 'utf8mb4'
 })
 

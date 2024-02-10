@@ -14,13 +14,11 @@ Now with slash commands
 | Remind  | minutes, message    | Reminds after given minutes                   |
 | Uptime  |                     | Bots uptime                                   |
 
-## Secrets
+## Env values
 
-Rename secrets_sample.json to secrets.json.
+Rename .env.sample to .env and enter bot token and client id to .env
 
-Enter bot token and client id to secrets.json.
-
-(optional) Enter Google, Database, Cleverbot secrets to enable Google, Cleverbot and database commands.
+(optional) Enter Google and Database values to enable Google and database commands.
 
 ## MySQL Database
 
