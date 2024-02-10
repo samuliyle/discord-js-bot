@@ -43,7 +43,7 @@ export const registerCommands = async (client: Client, clientId: string) => {
     logWarning('No commands loaded')
     return
   }
-  
+
   try {
     const rest = new REST({version: '10'}).setToken(client.token)
 
@@ -58,6 +58,6 @@ export const registerCommands = async (client: Client, clientId: string) => {
 
     logInfo('Successfully refreshed application (/) commands.')
   } catch (error) {
-    logError("Failed to refresh commands", error)
+    logError('Failed to refresh commands', error)
   }
 }
