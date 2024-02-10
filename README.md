@@ -6,14 +6,13 @@ Discord bot written in TypeScript using discord.js
 
 Now with slash commands
 
-| Command | Parameters                  | Description                                   |
-| ------- | --------------------------- | --------------------------------------------- |
-| Chat    | Message to write to the bot | Returns cleverbot answer                      |
-| Google  | Image search phrase         | Searches Google image                         |
-| Ping    |                             | Ping pong                                     |
-| Quote   |                             | Returns random message from the guild history |
-| Remind  | minutes, message            | Reminds after given minutes                   |
-| Uptime  |                             | Bots uptime                                   |
+| Command | Parameters          | Description                                   |
+| ------- | ------------------- | --------------------------------------------- |
+| Google  | Image search phrase | Searches Google image                         |
+| Ping    |                     | Ping pong                                     |
+| Quote   |                     | Returns random message from the guild history |
+| Remind  | minutes, message    | Reminds after given minutes                   |
+| Uptime  |                     | Bots uptime                                   |
 
 ## Secrets
 
@@ -32,4 +31,11 @@ mysql -u <username> -p
 create database discord;
 exit;
 mysql -u <username> -p discord < schema.sql
+```
+
+## Usage
+
+```
+npm i
+npm start
 ```

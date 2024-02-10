@@ -11,13 +11,12 @@
     "prettier:format": "prettier --write .",
     "test": "jest --watchAll",
     "test:ci": "jest",
-    "coverage": "jest --coverage",
+    "coverage": "jest --coverage --collectCoverageFrom='src/**/*.ts'",
     "type-check": "tsc"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "cleverbot-node": "^0.3.10",
     "discord.js": "14.14.1",
     "mysql": "^2.18.1"
   },
